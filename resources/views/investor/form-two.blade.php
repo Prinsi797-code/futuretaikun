@@ -1414,6 +1414,50 @@
                 });
             }
 
+            function clearCurrentStep() {
+                const emailValue = emailInput.value;
+                const countryCodeValue = countryCodeSelect.value;
+
+                const textInputs = document.querySelectorAll(
+                    'input[type="text"], input[type="number"], input[type="tel"], textarea');
+                textInputs.forEach(input => {
+                    if (input !== emailInput && input.name !== 'country_code') {
+                        input.value = '';
+                    }
+                });
+
+                const selectElements = document.querySelectorAll('select');
+                selectElements.forEach(select => {
+                    if (select !== countryCodeSelect) {
+                        select.selectedIndex = 0;
+                    }
+                });
+
+                registerNo.checked = true;
+                registerYes.checked = false;
+                businessDetailsSectionNo.style.display = 'block';
+                businessDetailsSection.style.display = 'none';
+
+                const fileInputs = [businessLogoInput, productPhotosInput, yBusinessLogoInput, yProductPhotosInput];
+                fileInputs.forEach(input => {
+                    if (input) input.value = '';
+                });
+
+                const errorElements = document.querySelectorAll('.text-danger');
+                errorElements.forEach(error => {
+                    error.textContent = '';
+                    error.classList.add('d-none');
+                });
+
+                emailInput.value = emailValue;
+                countryCodeSelect.value = countryCodeValue;
+            }
+
+            const clearBtn = document.getElementById('clearBtn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', clearCurrentStep);
+            }
+
             // Format number in Indian numbering system
             function formatIndianNumber(number) {
                 if (isNaN(number) || number === 0) return '0.00';
