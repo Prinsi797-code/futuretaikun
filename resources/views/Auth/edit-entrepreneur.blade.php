@@ -1155,7 +1155,7 @@
             console.log('Product photos (raw):', existingFiles.productPhotos);
             console.log('Product photos (normalized):', productPhotosArray);
 
-            const storageBaseUrl = 'http://127.0.0.1:8000/storage/'; // Updated to match your local environment
+            const storageBaseUrl = 'https://futuretaikun.com/storage/'; // Updated to match your local environment
 
             // Mapping of fields to their respective folders
             const folderMap = {

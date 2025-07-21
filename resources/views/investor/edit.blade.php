@@ -1073,7 +1073,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            const storageBaseUrl = 'http://127.0.0.1:8000/storage/';
+            const storageBaseUrl = 'https://futuretaikun.com/storage/';
 
             // Define folder mappings for file types
             const folderMap = {

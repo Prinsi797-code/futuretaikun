@@ -355,7 +355,7 @@
 
                         <div class="col-md-12">
                             <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="password" id="password"
+                                <input type="password" class="form-control" name="password" id="password"
                                     placeholder="Enter your password">
                                 {{-- <label for="email">Email</label> --}}
                                 @error('password')
@@ -371,7 +371,7 @@
                         </div> --}}
                         <div class="col-md-12">
                             <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="password_confirmation"
+                                <input type="password" class="form-control" name="password_confirmation"
                                     id="password_confirmation" placeholder="Confirm your password">
                                 {{-- <label for="email">Email</label> --}}
                                 @error('password_confirmation')
