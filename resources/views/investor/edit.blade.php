@@ -1340,7 +1340,6 @@
                     console.warn('No country or state selected for city population');
                     return;
                 }
-
                 try {
                     const response = await fetch(
                         `${BASE_URL}/countries/${countryIso2}/states/${stateIso2}/cities`, {

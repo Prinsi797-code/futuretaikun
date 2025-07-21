@@ -1273,6 +1273,7 @@
             const businessYearCountInput = document.getElementById('business_year_count');
             const emailInput = document.querySelector('input[name="email"]');
             const countryCodeSelect = document.querySelector('select[name="country_code"]');
+            const phoneNumberInput = document.querySelector('input[name="phone_number"]');
 
             // Elements for unregistered business fields
             const businessNameInput = document.getElementById('business_name');
@@ -1343,7 +1344,7 @@
             const businessRevenue2Error = document.getElementById('business_revenue2_error');
             const yMarketCapitalError = document.getElementById('y_market_capital_error');
             const yYourStakeError = document.getElementById('y_your_stake_error');
-
+            const phoneNumberError = document.getElementById('phone_number_error');
             const fundingCurrencyLabels = document.querySelectorAll('.funding_currency_label');
 
             // Default state: register_business = 0
@@ -1499,6 +1500,14 @@
                     isValid = false;
                 } else if (countrySelect.value === 'IN' && !/^\d{6}$/.test(pinCodeInput.value.trim())) {
                     setError(pinCodeInput, pinCodeError, 'Indian pin code must be exactly 6 digits');
+                    isValid = false;
+                }
+
+                if (!phoneNumberInput.value.trim()) {
+                    setError(phoneNumberInput, phoneNumberError, 'Phone number is required');
+                    isValid = false;
+                } else if (!/^\d{10,12}$/.test(phoneNumberInput.value.trim())) {
+                    setError(phoneNumberInput, phoneNumberError, 'Phone number must be 10-12 digits');
                     isValid = false;
                 }
 
