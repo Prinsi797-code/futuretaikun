@@ -626,6 +626,7 @@
                                     <th scope="col" style="min-width: 80px;">Reject</th>
                                     <th scope="col" style="min-width: 80px;">Youtube Link</th>
                                     <th scope="col" style="min-width: 80px;">Edit Image</th>
+                                    <th scope="col" style="min-width: 80px;">Mail Send</th>
                                     <th scope="col" style="min-width: 80px;">Approved</th>
                                 @endif
                                 <th scope="col" style="min-width: 100px;">Action</th>
@@ -731,6 +732,14 @@
                                                 data-register-business="{{ $entrepreneurs->register_business }}"
                                                 data-bs-toggle="modal" data-bs-target="#productLogo">
                                                 Products/Logo
+                                            </button>
+                                        </td>
+
+                                        <td>
+                                            <button class="btn btn-sm btn-primary mail-send" data-id="{{ $entrepreneurs->id }}"
+                                                data-name="{{ $entrepreneurs->full_name }}"
+                                                data-email="{{ $entrepreneurs->email }}">
+                                                Mail Send
                                             </button>
                                         </td>
                                     @endunless
@@ -996,8 +1005,6 @@
                                         required placeholder="https://example.com/video.mp4">
                                 </div>
                             </div>
-
-
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-success">Save</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -1234,6 +1241,76 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Existing HTML remains the same, only updating the JavaScript -->
     <script>
+        //reminder mail send start #
+
+        $(document).ready(function() {
+            // Handle mail send button click
+            $('.mail-send').on('click', function(e) {
+                e.preventDefault();
+
+                const button = $(this);
+                const entrepreneurId = button.data('id');
+
+                // Show loading state
+                button.prop('disabled', true).text('Sending...');
+
+                // Send AJAX request
+                $.ajax({
+                    url: '{{ route('entrepreneur.send.reminder') }}', // Make sure to define this route
+                    method: 'POST',
+                    data: {
+                        entrepreneur_id: entrepreneurId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message with SweetAlert2
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message ||
+                                    'Reminder email sent successfully!',
+                            });
+
+                            // Optional: Show incomplete fields in console
+                            if (response.incomplete_fields && response.incomplete_fields
+                                .length > 0) {
+                                console.log('Incomplete fields:', response.incomplete_fields);
+                            }
+                        } else {
+                            // Show error message with SweetAlert2
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Unknown error occurred',
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        let errorMessage = 'Failed to send email';
+
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        // Show error message with SweetAlert2
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: errorMessage,
+                        });
+                    },
+                    complete: function() {
+                        // Reset button state
+                        button.prop('disabled', false).text('Mail Send');
+                    }
+                });
+            });
+        });
+        //end 
+
         document.addEventListener('DOMContentLoaded', function() {
             const productLogoModal = document.getElementById('productLogo');
             productLogoModal.addEventListener('show.bs.modal', function(event) {

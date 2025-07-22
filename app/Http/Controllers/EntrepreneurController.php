@@ -2300,4 +2300,164 @@ class EntrepreneurController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Failed to update product and logo data: ' . $e->getMessage()], 500);
         }
     }
+
+    // reminder email send 
+    public function sendReminderEmail(Request $request)
+    {
+        try {
+            $entrepreneurId = $request->input('entrepreneur_id');
+            $entrepreneur = Entrepreneur::find($entrepreneurId);
+
+            if (!$entrepreneur) {
+                return response()->json(['error' => 'Entrepreneur not found'], 404);
+            }
+
+            $incompleteFields = $this->getIncompleteFields($entrepreneur);
+
+            if (empty($incompleteFields)) {
+                return response()->json(['message' => 'Profile is already complete'], 200);
+            }
+
+            // Send email
+            Mail::send('emails.profile_reminder', [
+                'entrepreneur' => $entrepreneur,
+                'incomplete_fields' => $incompleteFields
+            ], function ($message) use ($entrepreneur) {
+                $message->to($entrepreneur->email, $entrepreneur->full_name)
+                    ->subject('Complete Your Profile - Reminder');
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reminder email sent successfully',
+                'incomplete_fields' => $incompleteFields
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to send email: ' . $e->getMessage()], 500);
+        }
+    }
+
+    private function getIncompleteFields($entrepreneur)
+    {
+        $incompleteFields = [];
+
+        if ($entrepreneur->register_business == 0) {
+            // Fields to check when register_business = 0
+            $fieldsToCheck = [
+                'full_name' => 'Full Name',
+                'phone_number' => 'Phone Number',
+                'country' => 'Country',
+                'business_name' => 'Business Name',
+                'industry' => 'Industry',
+                'pitch_deck' => 'Pitch Deck',
+                'country_code' => 'Country Code',
+                'qualification' => 'Qualification',
+                'age' => 'Age',
+                'current_address' => 'Current Address',
+                'city' => 'City',
+                'state' => 'State',
+                'pin_code' => 'Pin Code',
+                'dob' => 'Date of Birth',
+                'business_state' => 'Business State',
+                'business_city' => 'Business City',
+                'business_describe' => 'Business Description',
+                'invested_amount' => 'Invested Amount',
+                'business_address' => 'Business Address',
+                'market_capital' => 'Market Capital',
+                'your_stake' => 'Your Stake',
+                'stake_funding' => 'Stake Funding',
+                'business_logo' => 'Business Logo',
+                'product_photos' => 'Product Photos',
+                'own_fund' => 'Own Fund',
+                'loan' => 'Loan',
+                'business_country' => 'Business Country',
+                'brand_name' => 'Brand Name',
+                'video_upload' => 'Video Upload'
+            ];
+        } else {
+            // Fields to check when register_business = 1
+            $fieldsToCheck = [
+                'full_name' => 'Full Name',
+                'phone_number' => 'Phone Number',
+                'country' => 'Country',
+                'website_links' => 'Website Links',
+                'country_code' => 'Country Code',
+                'qualification' => 'Qualification',
+                'age' => 'Age',
+                'current_address' => 'Current Address',
+                'city' => 'City',
+                'state' => 'State',
+                'pin_code' => 'Pin Code',
+                'dob' => 'Date of Birth',
+                'founder_number' => 'Founder Number',
+                'business_year' => 'Business Year',
+                'business_year_count' => 'Business Year Count',
+                'business_revenue1' => 'Business Revenue 1',
+                'business_revenue2' => 'Business Revenue 2',
+                'business_revenue3' => 'Business Revenue 3',
+                'business_mobile' => 'Business Mobile',
+                'business_email' => 'Business Email',
+                'registration_type_of_entity' => 'Registration Type of Entity',
+                'tax_registration_number' => 'Tax Registration Number',
+                'employee_number' => 'Employee Number',
+                'y_business_name' => 'Business Name (Year)',
+                'y_brand_name' => 'Brand Name (Year)',
+                'y_describe_business' => 'Business Description (Year)',
+                'y_business_address' => 'Business Address (Year)',
+                'y_business_country' => 'Business Country (Year)',
+                'y_business_state' => 'Business State (Year)',
+                'y_business_city' => 'Business City (Year)',
+                'y_zipcode' => 'Zipcode (Year)',
+                'y_type_industries' => 'Type Industries (Year)',
+                'y_own_fund' => 'Own Fund (Year)',
+                'y_loan' => 'Loan (Year)',
+                'y_invested_amount' => 'Invested Amount (Year)',
+                'y_product_photos' => 'Product Photos (Year)',
+                'y_business_logo' => 'Business Logo (Year)',
+                'y_pitch_deck' => 'Pitch Deck (Year)',
+                'video_upload' => 'Video Upload',
+                'y_market_capital' => 'Market Capital (Year)',
+                'y_stake_funding' => 'Stake Funding (Year)'
+            ];
+        }
+
+        foreach ($fieldsToCheck as $field => $displayName) {
+            $value = $entrepreneur->$field;
+
+            if ($this->isFieldEmpty($value)) {
+                $incompleteFields[] = $displayName;
+            }
+        }
+
+        return $incompleteFields;
+    }
+
+    private function isFieldEmpty($value)
+    {
+        // Check for null
+        if (is_null($value)) {
+            return true;
+        }
+
+        // Check for empty string
+        if (is_string($value) && trim($value) === '') {
+            return true;
+        }
+
+        // Check for empty array
+        if (is_array($value) && empty($value)) {
+            return true;
+        }
+
+        // Check for JSON string that represents empty array
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded) && empty($decoded)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
