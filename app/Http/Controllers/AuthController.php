@@ -300,7 +300,6 @@ class AuthController extends Controller
             'email' => 'required|email',
             'role' => 'required|in:entrepreneur,investor',
         ]);
-
         try {
             // Check if email exists in users table
             $user = User::where('email', $request->email)->first();
@@ -354,7 +353,6 @@ class AuthController extends Controller
                     'is_verified' => false,
                 ]);
             }
-
             // Cleanup logic for verified users with incomplete profiles
             $users = User::where('is_verified', true)
                 ->where('otp_expires_at', '<=', Carbon::now())
@@ -420,12 +418,10 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Something went wrong. Please try again.'])->withInput();
         }
     }
-
     public function showOtpForm($email)
     {
         return view('otp', compact('email'));
     }
-
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -459,13 +455,10 @@ class AuthController extends Controller
         //  return redirect()->route('investor.form', ['user_id' => $user->id]);
         // }
     }
-
-
     public function showPasswordForm($email)
     {
         return view('Auth.password', ['email' => $email]);
     }
-
     public function createPassword(Request $request)
     {
         $request->validate([
@@ -500,7 +493,6 @@ class AuthController extends Controller
             return redirect()->route('investor.form', ['user_id' => $user->id]);
         }
     }
-
     public function showPassword($request)
     {
         $request->validate([
@@ -521,8 +513,6 @@ class AuthController extends Controller
 
         return redirect()->route('password.form', ['email' => $user->email]);
     }
-
-
     public function chooseRole($user_id)
     {
         $user = User::find($user_id);
@@ -533,7 +523,6 @@ class AuthController extends Controller
 
         return view('choose-role', compact('user'));
     }
-
     public function setRole(Request $request)
     {
         $request->validate([

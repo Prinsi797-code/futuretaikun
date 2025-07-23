@@ -322,8 +322,6 @@ class EntrepreneurController extends Controller
     public function store(Request $request)
     {
         Log::info('Enter form submission:', $request->all());
-        // Log::info('Files received:', $request->allFiles());
-        // Add try-catch to capture validation errors
         try {
             $validatedData = $request->validate([
                 'user_id' => 'required|exists:users,id',
@@ -398,7 +396,6 @@ class EntrepreneurController extends Controller
                 'more_your_stake' => 'nullable|array',
                 'more_stake_funding' => 'nullable|array',
                 'video_upload' => 'nullable|file|mimes:mp4,mov,avi,webm',
-
             ]);
 
             Log::info('Validation passed successfully');

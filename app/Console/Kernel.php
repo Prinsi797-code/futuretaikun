@@ -2,11 +2,15 @@
 
 namespace App\Console;
 
+use App\Console\Commands\SendReminderEmails;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected $commands = [
+        SendReminderEmails::class,
+    ];
     /**
      * Define the application's command schedule.
      *
@@ -15,7 +19,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('cleanup:investor-users')->daily();
+        $schedule->command('reminder:send-emails')
+            ->dailyAt('03:00')
+            ->emailOutputOnFailure('admin@yourdomain.com');
     }
 
     /**
@@ -26,7 +32,6 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__ . '/Commands');
-
         require base_path('routes/console.php');
     }
 }
