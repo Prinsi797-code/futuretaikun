@@ -533,6 +533,9 @@
             <a href="{{ route('change.password') }}" class="{{ request()->is('change-password') ? 'active' : '' }}">
                 Change Password
             </a>
+            <a href="{{ route('setting.index') }}" class="{{ request()->is('admin/setting') ? 'active' : '' }}">
+                Settings
+            </a>
             <form method="POST" action="{{ route('logout') }}" class="mt-5">
                 @csrf
                 <button class="btn btn-outline-danger btn-sm" style="width: -webkit-fill-available;">Logout</button>

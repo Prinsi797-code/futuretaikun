@@ -9,6 +9,7 @@ use App\Http\Controllers\EntrepreneurController;
 use App\Http\Controllers\InvestorController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\SettingController;
 use App\Models\Entrepreneur;
 use App\Models\Investor;
 use Illuminate\Support\Facades\Route;
@@ -91,6 +92,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/investor/send-reminder', [InvestorController::class, 'sendReminderEmail'])
         ->name('investor.send.reminder');
 
+    Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+    Route::put('/settings/{id}', [SettingController::class, 'update'])->name('settings.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     // Route::post('/logout', function () {
