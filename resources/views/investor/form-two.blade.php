@@ -997,27 +997,7 @@
                                             <div class="text-danger mt-1 d-none" id="designation_error"></div>
                                         </div>
                                     </div>
-                                    {{-- <div class="col-md-6 mb-3">
-                                        <label for="pitch_deck" class="form-label">Upload Business Logo *</label>
-                                        <div class="file-upload-wrapper">
-                                            <input class="form-control" type="file" id="business_logo"
-                                                name="business_logo">
-                                            <label for="business_logo" class="file-upload-label w-100">
-                                            </label>
-                                        </div>
-                                        <div id="business_logo_preview" class="image-preview-container mt-2">
-                                            @if ($investo && $investo->business_logo)
-                                                <img src="{{ Storage::url($investo->business_logo) }}"
-                                                    alt="Business Logo" style="max-width: 100px;">
-                                                <small class="form-text text-muted">
-                                                    Current logo: <a href="{{ Storage::url($investo->business_logo) }}"
-                                                        target="_blank">View</a>
-                                                </small>
-                                            @endif
-                                        </div>
-                                        <div class="text-danger mt-1 d-none" id="business_logo_error"></div>
-                                        <small class="text-muted">Select 1 image (JPG, JPEG, PNG only, max 5MB)</small>
-                                    </div> --}}
+
                                     <div class="col-md-6 mb-3">
                                         <div class="upload-section">
                                             <label for="business_logo" class="form-label">Upload Business Logo </label>
@@ -1039,27 +1019,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- 
-                                    <div class="col-md-6 mb-3">
-                                        <label for="investor_profile" class="form-label">Upload Business
-                                            Profile</label>
-                                        <input class="form-control" type="file" id="investor_profile"
-                                            name="investor_profile" accept=".pdf"
-                                            value="{{ old('investor_profile') }}">
-                                        <label for="investor_profile" class="file-upload-label w-100">
-                                        </label>
-                                        <div id="investor_profile_preview" class="pdf-preview-container mt-2">
-                                            @if ($investo && $investo->investor_profile)
-                                                <small class="form-text text-muted">
-                                                    Current profile: <a
-                                                        href="{{ Storage::url($investo->investor_profile) }}"
-                                                        target="_blank">View</a>
-                                                </small>
-                                            @endif
-                                        </div>
-                                        <div class="text-danger mt-1 d-none" id="investor_profile_error"></div>
-                                        <small class="text-muted">Select 1 PDF (pdf) </small>
-                                    </div> --}}
                                     <div class="col-md-6 mb-3">
                                         <div class="form-group">
                                             <label for="investor_profile" class="form-label">Upload Business
@@ -1331,6 +1290,7 @@
             // Elements for personal information fields
             const fullNameInput = document.getElementById('full_name');
             const countrySelect = document.getElementById('country');
+            const emailInput = document.querySelector('input[name="email"]');
             const stateSelect = document.getElementById('state');
             const citySelect = document.getElementById('city');
             const pinCodeInput = document.getElementById('pin_code');
@@ -1346,6 +1306,7 @@
             const investmentFields = document.getElementById('investment-fields');
             const addMoreCompanyBtn = document.getElementById('add-more-company');
             const companyWrapper = document.getElementById('company-wrapper');
+            const countryCodeSelect = document.querySelector('select[name="country_code"]');
 
             const fullNameError = document.getElementById('full_name_error');
             const countryError = document.getElementById('country_error');
@@ -1418,14 +1379,17 @@
                 const emailValue = emailInput.value;
                 const countryCodeValue = countryCodeSelect.value;
 
+                // Clear text, number, tel, and textarea inputs (except email and country code)
                 const textInputs = document.querySelectorAll(
-                    'input[type="text"], input[type="number"], input[type="tel"], textarea');
+                    'input[type="text"], input[type="number"], input[type="tel"], textarea'
+                );
                 textInputs.forEach(input => {
                     if (input !== emailInput && input.name !== 'country_code') {
                         input.value = '';
                     }
                 });
 
+                // Clear select elements (except country code)
                 const selectElements = document.querySelectorAll('select');
                 selectElements.forEach(select => {
                     if (select !== countryCodeSelect) {
@@ -1433,26 +1397,65 @@
                     }
                 });
 
-                registerNo.checked = true;
-                registerYes.checked = false;
-                businessDetailsSectionNo.style.display = 'block';
-                businessDetailsSection.style.display = 'none';
+                // Clear Select2 multi-select fields
+                $('#preferred_industries').val(null).trigger('change');
+                $('#preferred_geographies').val(null).trigger('change');
+                $('#preferred_startup_stage').val(null).trigger('change');
 
-                const fileInputs = [businessLogoInput, productPhotosInput, yBusinessLogoInput, yProductPhotosInput];
+                // Clear file inputs
+                const fileInputs = document.querySelectorAll('input[type="file"]');
                 fileInputs.forEach(input => {
-                    if (input) input.value = '';
+                    input.value = ''; // Clear file input
+                    // Reset placeholder visibility (if applicable)
+                    const placeholder = document.getElementById(`${input.id}-placeholder`);
+                    if (placeholder) {
+                        placeholder.classList.remove('d-none');
+                    }
+                    // Clear file info for investor profile
+                    if (input.id === 'investor_profile') {
+                        const fileInfo = document.getElementById('fileInfo');
+                        const fileName = document.getElementById('fileName');
+                        const fileSize = document.getElementById('fileSize');
+                        if (fileInfo) fileInfo.style.display = 'none';
+                        if (fileName) fileName.textContent = '';
+                        if (fileSize) fileSize.textContent = '';
+                    }
                 });
 
+                // Clear error messages
                 const errorElements = document.querySelectorAll('.text-danger');
                 errorElements.forEach(error => {
                     error.textContent = '';
                     error.classList.add('d-none');
                 });
 
+                // Reset radio buttons (existing company)
+                existingCompanyNo.checked = true;
+                existingCompanyYes.checked = false;
+                companyFields.style.display = 'none';
+
+                // Reset checkbox (actively investing)
+                activelyInvestingCheckbox.checked = false;
+                investmentFields.style.display = 'none';
+
+                // Reset dynamic company fields
+                const companyGroups = document.querySelectorAll('.company-group');
+                companyGroups.forEach((group, index) => {
+                    if (index > 0) group.remove(); // Remove all additional company groups
+                });
+                // Clear first company group fields
+                const firstCompanyGroup = document.querySelector('.company-group');
+                if (firstCompanyGroup) {
+                    const companyInputs = firstCompanyGroup.querySelectorAll('input');
+                    companyInputs.forEach(input => {
+                        input.value = '';
+                    });
+                }
+
+                // Restore preserved values
                 emailInput.value = emailValue;
                 countryCodeSelect.value = countryCodeValue;
             }
-
             const clearBtn = document.getElementById('clearBtn');
             if (clearBtn) {
                 clearBtn.addEventListener('click', clearCurrentStep);

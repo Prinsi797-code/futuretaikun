@@ -1537,4 +1537,144 @@ class InvestorController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Failed to update product and logo data: ' . $e->getMessage()], 500);
         }
     }
+
+    public function sendReminderEmail(Request $request)
+    {
+        try {
+            $investorId = $request->input('investor_id');
+            $investor = Investor::find($investorId);
+
+            if (!$investor) {
+                return response()->json(['error' => 'Investor not found'], 404);
+            }
+
+            $incompleteFields = $this->getIncompleteFields($investor);
+
+            if (empty($incompleteFields)) {
+                return response()->json(['message' => 'Profile is already complete'], 200);
+            }
+
+            // Send email
+            Mail::send('emails.investor_profile_reminder', [
+                'investor' => $investor,
+                'incomplete_fields' => $incompleteFields
+            ], function ($message) use ($investor) {
+                $message->to($investor->email, $investor->full_name)
+                    ->subject('Complete Your Profile - Reminder');
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reminder email sent successfully',
+                'incomplete_fields' => $incompleteFields
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to send email: ' . $e->getMessage()], 500);
+        }
+    }
+
+    private function getIncompleteFields($investor)
+    {
+        $incompleteFields = [];
+
+        if ($investor->existing_company == 0) {
+            // Fields to check when register_business = 0
+            $fieldsToCheck = [
+                'full_name' => 'Full Name',
+                'country_code' => 'Country Code',
+                'phone_number' => 'Phone Number',
+                'current_address' => 'Current Address',
+                'country' => 'Country',
+                'city' => 'City',
+                'state' => 'State',
+                'pin_code' => 'Pin Code',
+                'linkedin_profile' => 'LinkedIn Profile',
+                'age' => 'Age',
+                'dob' => 'Date of Birth',
+                'qualification' => 'Qualification',
+                'photo' => 'Photo',
+
+                'professional_phone' => 'Professional Phone',
+                'company_country_code' => 'Company Country Code',
+                'investment_experince' => 'Investor Experince',
+                'investor_type' => 'Investor Type',
+                'investment_range' => 'Investment Range',
+                'preferred_geographies' => 'Preferred Geographies',
+            ];
+        } else {
+            // Fields to check when register_business = 1
+            $fieldsToCheck = [
+                'full_name' => 'Full Name',
+                'country_code' => 'Country Code',
+                'phone_number' => 'Phone Number',
+                'current_address' => 'Current Address',
+                'country' => 'Country',
+                'city' => 'City',
+                'state' => 'State',
+                'pin_code' => 'Pin Code',
+                'linkedin_profile' => 'LinkedIn Profile',
+                'age' => 'Age',
+                'dob' => 'Date of Birth',
+                'qualification' => 'Qualification',
+                'photo' => 'Photo',
+
+                'professional_phone' => 'Professional Phone',
+                'company_country_code' => 'Company Country Code',
+                'investment_experince' => 'Investor Experince',
+                'investor_type' => 'Investor Type',
+                'investment_range' => 'Investment Range',
+                'preferred_geographies' => 'Preferred Geographies',
+
+                'organization_name' => 'Organization Name',
+                'company_address' => 'Company Address',
+                'company_country' => 'Company Country',
+                'company_state' => 'Company State',
+                'company_city' => 'Company City',
+                'company_zipcode' => 'Company Zipcode',
+                'professional_email' => 'Professional Email',
+                'website' => 'Website',
+                'tax_registration_number' => 'Tax Registration Number',
+                'designation' => 'Designation',
+                'business_logo' => 'Business Logo',
+                'investor_profile' => 'Investor Profile',
+                'professional_phone' => 'Professional Phone',
+                'investment_experince' => 'Investment Experince',
+                'investor_type' => 'Investor Type',
+                'investment_range' => ' Investment Range',
+                'preferred_industries' => 'Preferred Industries',
+                'preferred_geographies' => 'Preferred Geographies',
+                'preferred_startup_stage' => 'Preferred Startup Stage',
+            ];
+        }
+
+        foreach ($fieldsToCheck as $field => $displayName) {
+            $value = $investor->$field;
+
+            if ($this->isFieldEmpty($value)) {
+                $incompleteFields[] = $displayName;
+            }
+        }
+        return $incompleteFields;
+    }
+
+    private function isFieldEmpty($value)
+    {
+        if (is_null($value)) {
+            return true;
+        }
+        if (is_string($value) && trim($value) === '') {
+            return true;
+        }
+        if (is_array($value) && empty($value)) {
+            return true;
+        }
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded) && empty($decoded)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

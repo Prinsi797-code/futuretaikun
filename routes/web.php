@@ -88,6 +88,8 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/admin/update-investor-photo-logo', [InvestorController::class, 'updatePhotosLogo'])->name('admin.update.photo.logo');
     Route::post('/entrepreneur/send-reminder', [EntrepreneurController::class, 'sendReminderEmail'])
         ->name('entrepreneur.send.reminder');
+    Route::post('/investor/send-reminder', [InvestorController::class, 'sendReminderEmail'])
+        ->name('investor.send.reminder');
 
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

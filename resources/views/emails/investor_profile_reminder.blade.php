@@ -81,12 +81,12 @@
     <div class="container">
         <div class="header">
             <h1>Complete Your Profile</h1>
-            <p>Hello {{ $entrepreneur->full_name ?? 'Entrepreneur' }},</p>
+            <p>Hello {{ $investor->full_name ?? 'Investor' }},</p>
         </div>
 
         <div class="content">
-            <p>We noticed that your profile is incomplete. To make the most of our platform and connect with potential
-                investors, please complete the following required fields:</p>
+            <p>We noticed that your profile is incomplete. To fully utilize our platform and discover promising startup
+                opportunities, please complete the following required fields:</p>
 
             <div class="incomplete-fields">
                 <h3>Missing Information:</h3>
@@ -97,19 +97,19 @@
                 </ul>
             </div>
 
-            <p>Completing your profile will help you:</p>
+            <p>By completing your profile, you will be able to:</p>
             <ul>
-                <li>Connect with relevant investors</li>
-                <li>Showcase your business effectively</li>
-                <li>Increase your chances of getting funded</li>
-                <li>Access more features on our platform</li>
+                <li>View detailed startup profiles</li>
+                <li>Connect with entrepreneurs based on your investment interests</li>
+                <li>Track and manage your potential investments</li>
+                <li>Unlock full access to our platform's features</li>
             </ul>
 
             <div style="text-align: center;">
                 <a href="{{ route('login') }}" class="cta-button">Complete Profile Now</a>
             </div>
 
-            <p>If you have any questions or need assistance, please don't hesitate to reach out to our support team.</p>
+            <p>If you have any questions or need assistance, feel free to contact our support team.</p>
 
             <p>Best regards,<br>Futuretaikun</p>
         </div>
