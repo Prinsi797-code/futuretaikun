@@ -604,10 +604,10 @@
 
                         <div class="card-body py-3 text-left">
                             <h5 class="card-title fw-bold">
-                                {{ Str::limit($entrepreneur->register_business == 1 ? $entrepreneur->y_business_name : $entrepreneur->business_name, 30) }}
+                                {{ Str::limit($entrepreneur->register_business == 1 ? $entrepreneur->y_business_name : $entrepreneur->business_name, 20) }}
                             </h5>
                             <p class="card-text text-muted">
-                                {{ Str::limit($entrepreneur->register_business == 1 ? $entrepreneur->y_describe_business : $entrepreneur->business_describe, 35) }}
+                                {{ Str::limit($entrepreneur->register_business == 1 ? $entrepreneur->y_describe_business : $entrepreneur->business_describe, 30) }}
                             </p>
                             <div class="text-muted lg fw-bold d-flex">
                                 <span><i class="fas fa-map-marker-alt me-1"

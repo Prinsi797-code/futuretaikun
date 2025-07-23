@@ -626,7 +626,7 @@
                                     <th scope="col" style="min-width: 80px;">Reject</th>
                                     <th scope="col" style="min-width: 80px;">Youtube Link</th>
                                     <th scope="col" style="min-width: 80px;">Edit Image</th>
-                                    <th scope="col" style="min-width: 80px;">Remainder</th>
+                                    <th scope="col" style="min-width: 80px;">Reminder</th>
                                     <th scope="col" style="min-width: 80px;">Approved</th>
                                 @endif
                                 <th scope="col" style="min-width: 100px;">Action</th>
@@ -739,7 +739,7 @@
                                             <button class="btn btn-sm btn-primary mail-send" data-id="{{ $entrepreneurs->id }}"
                                                 data-name="{{ $entrepreneurs->full_name }}"
                                                 data-email="{{ $entrepreneurs->email }}">
-                                                Remainder
+                                                Reminder
                                             </button>
                                         </td>
                                     @endunless
