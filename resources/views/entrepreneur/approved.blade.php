@@ -253,6 +253,39 @@
             padding-left: 5px;
         }
     }
+
+
+    .hover-expand {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .hover-expand:hover::after {
+        content: attr(data-full-text);
+        position: absolute;
+        background-color: #FFFCED;
+        border: 1px solid #FFFCED;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 25px;
+        white-space: nowrap;
+        z-index: 1000;
+        top: 100%;
+        left: 0;
+        margin-top: 5px;
+        font-size: 14px;
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .hover-expand:hover::before {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 10px;
+        background-color: #FFFCED;
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.15);
+        z-index: 1001;
+    }
 </style>
 <?php
 // Number formatting function - add this at the top of your blade file or in a helper
@@ -462,7 +495,8 @@ function formatNumber($number)
                                 </div>
 
                                 <div class="card-body py-3 text-left">
-                                    <h5 class="card-title fw-bold">
+                                    <h5 class="card-title fw-bold"
+                                        title="{{ $entrepreneur->register_business == 1 ? $entrepreneur->y_business_name : $entrepreneur->business_name }}">
                                         {{ Str::limit($entrepreneur->register_business == 1 ? $entrepreneur->y_business_name : $entrepreneur->business_name, 20) }}
                                     </h5>
                                     <p class="card-text text-muted">
@@ -634,6 +668,13 @@ function formatNumber($number)
                     });
                 });
             });
+        </script>
+        <script>
+            // Bootstrap tooltip ke liye ye script add karni padegi
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
         </script>
     @endsection
     {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
