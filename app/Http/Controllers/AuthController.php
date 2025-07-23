@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\CleanupInvestorUser;
+use App\Mail\NewUserRegisteredMail;
 use App\Mail\SendUserLoginInfoMail;
 use App\Models\DummyEntrepreneur;
 use App\Models\DummyInvestor;
@@ -488,6 +489,8 @@ class AuthController extends Controller
         $redirectRole = $user->role1 ?? $user->role;
 
         Mail::to($user->email)->send(new SendUserLoginInfoMail($user->name, $user->email, $plainPassword));
+
+        Mail::to('info@futuretaikun.com')->send(new NewUserRegisteredMail($user->name, $user->email, $redirectRole));
 
         Log::info('Email sent successfully to:', ['email' => $user->email]);
         // Redirect based on role
