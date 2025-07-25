@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Enter Mobile Number - Future Taikun')
+@section('title', 'Password - Future Taikun')
 <style>
     /* Remove body background and padding */
     body {
