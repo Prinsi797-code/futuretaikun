@@ -726,7 +726,7 @@ class EntrepreneurController extends Controller
             });
         }
 
-        $entrepreneur = $query->paginate(5)->appends($request->all());
+        $entrepreneur = $query->paginate(100)->appends($request->all());
         $allentrepreneur = Entrepreneur::all();
 
         if ($entrepreneur->currentPage() > $entrepreneur->lastPage()) {

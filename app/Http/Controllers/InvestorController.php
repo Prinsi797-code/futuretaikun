@@ -914,7 +914,7 @@ class InvestorController extends Controller
     {
         $investores = Investor::all();
         $investore = Investor::query()
-            ->paginate(5)
+            ->paginate(100)
             ->appends($request->except('page')); // Preserve query parameters except 'page'
 
         if ($investore->currentPage() > $investore->lastPage()) {

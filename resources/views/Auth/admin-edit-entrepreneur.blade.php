@@ -280,7 +280,7 @@
                                 <input type="text" pattern="[0-9]{6}" inputmode="numeric" maxlength="6"
                                     class="form-control" name="pin_code"
                                     value="{{ old('pin_code', $entrepreneur->pin_code) }}"
-                                    placeholder="Type your pin/zip code..." required>
+                                    placeholder="Type your pin/zip code...">
                                 <label for="pin_code">Pin/Zip Code *</label>
                                 <div class="text-danger mt-1 d-none" id="pin_code_error"></div>
                                 @error('pin_code')
@@ -291,7 +291,7 @@
 
                         <div class="col-md-6 mb-3">
                             <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="dob" id="dob" required
+                                <input type="text" class="form-control" name="dob" id="dob"
                                     value="{{ old('dob', $entrepreneur->dob) }}">
                                 <label for="dob">Date of Birth *</label>
                                 <div class="text-danger mt-1 d-none" id="dob_error"></div>
@@ -304,7 +304,7 @@
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <div class="form-floating-custom">
-                                    <select class="form-select" name="qualification" id="qualification" required>
+                                    <select class="form-select" name="qualification" id="qualification">
                                         <option value="">Select Qualification</option>
                                         @foreach ($qualifications as $qualification)
                                             <option value="{{ $qualification }}"
@@ -347,7 +347,7 @@
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="business_name"
                                         value="{{ old('business_name', $entrepreneur->business_name) }}"
-                                        placeholder="Type business name..." required>
+                                        placeholder="Type business name...">
                                     <label for="business_name">Business Idea Name *</label>
                                     <div class="text-danger mt-1 d-none" id="business_name_error"></div>
                                 </div>
@@ -357,7 +357,7 @@
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="brand_name"
                                         value="{{ old('brand_name', $entrepreneur->brand_name) }}"
-                                        placeholder="Type brand name..." required>
+                                        placeholder="Type brand name...">
                                     <label for="brand_name">Business Brand Name *</label>
                                     <div class="text-danger mt-1 d-none" id="brand_name_error"></div>
                                 </div>
@@ -367,7 +367,7 @@
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="business_address"
                                         value="{{ old('business_address', $entrepreneur->business_address) }}"
-                                        placeholder="Type proposed business address..." required>
+                                        placeholder="Type proposed business address...">
                                     <label for="proposed_business_address">Proposed Business Address *</label>
                                     <div class="text-danger mt-1 d-none" id="proposed_business_address_error"></div>
                                 </div>
@@ -422,7 +422,7 @@
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
                                     <div class="form-floating-custom">
-                                        <select class="form-select" name="industry" id="industry" required>
+                                        <select class="form-select" name="industry" id="industry">
                                             <option value="">Select Industries</option>
                                             @foreach ($industries as $industry)
                                                 <option value="{{ $industry }}"
@@ -441,7 +441,7 @@
                                 <div class="form-floating-custom">
                                     <input type="number" class="form-control" name="own_fund"
                                         value="{{ old('own_fund', $entrepreneur->own_fund) }}"
-                                        placeholder="Type own fund amount..." required>
+                                        placeholder="Type own fund amount...">
                                     <label for="own_fund">Own Fund <span class="funding_currency_label">()</span>*</label>
                                     <div class="text-danger mt-1 d-none" id="own_fund_error"></div>
 
@@ -451,8 +451,7 @@
                             <div class="col-md-4 mb-3">
                                 <div class="form-floating-custom">
                                     <input type="number" class="form-control" name="loan"
-                                        value="{{ old('loan', $entrepreneur->loan) }}" placeholder="Type loan..."
-                                        required>
+                                        value="{{ old('loan', $entrepreneur->loan) }}" placeholder="Type loan...">
                                     <label for="loan">Loan *</label>
                                     <div class="text-danger mt-1 d-none" id="loan_error"></div>
 
@@ -476,7 +475,7 @@
                                     <input type="number" class="form-control investment" name="market_capital"
                                         id="market_capital" min="1" step="0.01"
                                         value="{{ old('market_capital', $entrepreneur->market_capital) }}"
-                                        placeholder="Type your fund required for business idea..." required>
+                                        placeholder="Type your fund required for business idea...">
                                     <label for="market_capital">
                                         <span id="funding_label_text">Fund Required for Business Idea</span>
                                         <span class="funding_currency_label">()</span>
@@ -491,7 +490,7 @@
                                     <input type="number" class="form-control equity" name="your_stake" id="your_stake"
                                         min="1" max="100" step="0.01"
                                         value="{{ old('your_stake', $entrepreneur->your_stake) }}"
-                                        placeholder="Type your equity offered (percentage)..." required>
+                                        placeholder="Type your equity offered (percentage)...">
                                     <label for="your_stake">Equity Offered (Percentage)</label>
                                     <div class="text-danger mt-1 d-none" id="your_stake_error"></div>
 
@@ -582,7 +581,7 @@
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="y_business_name"
                                         value="{{ old('y_business_name', $entrepreneur->y_business_name) }}"
-                                        placeholder="Type your business name..." required>
+                                        placeholder="Type your business name...">
                                     <label class="form-label" id="y_business_name_label">Business Name
                                         *</label>
                                     <div class="text-danger mt-1 d-none" id="y_business_name_error"></div>
@@ -593,7 +592,7 @@
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="y_brand_name"
                                         value="{{ old('y_brand_name', $entrepreneur->y_brand_name) }}"
-                                        placeholder="Type your brand name..." required>
+                                        placeholder="Type your brand name...">
                                     <label class="form-label" id="y_brand_name_label">Business Brand Name
                                         *</label>
                                     <div class="text-danger mt-1 d-none" id="y_brand_name_error"></div>
@@ -688,7 +687,7 @@
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="y_zipcode"
                                         value="{{ old('y_zipcode', $entrepreneur->y_zipcode) }}"
-                                        placeholder="Type your pin / zipcode..." required>
+                                        placeholder="Type your pin / zipcode...">
                                     <label class="form-label" id="y_zipcode_label">Business Pin / Zip Code *</label>
                                 </div>
                             </div>
