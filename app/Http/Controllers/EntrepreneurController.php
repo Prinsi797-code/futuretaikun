@@ -770,7 +770,7 @@ class EntrepreneurController extends Controller
 
         $query->orderBy('created_at', 'desc');
 
-        $approvedEntrepreneurs = $query->paginate(5)->appends($request->all());
+        $approvedEntrepreneurs = $query->paginate(100)->appends($request->all());
 
         return view('entrepreneur.approved', compact('approvedEntrepreneurs'));
     }
