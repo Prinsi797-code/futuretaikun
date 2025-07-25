@@ -1233,6 +1233,411 @@ class EntrepreneurController extends Controller
         return redirect()->route('entrepreneur.edit')->with('success', 'Entrepreneur profile updated successfully!')->with('entrepreneur', $updatedEntrepreneur);
     }
 
+    // admin edit profile 
+    public function adminEdit($id)
+    {
+        // Fetch the entrepreneur by ID
+        $entrepreneur = Entrepreneur::findOrFail($id);
+
+        // Fetch countries from API
+        $apiKey = 'WmtRc2MzTzhLRnltNGNmSjljT3RqakROckhSOFFQSTZqMXBGbVlNUw==';
+        $response = Http::withHeaders(['X-CSCAPI-KEY' => $apiKey])
+            ->get('https://api.countrystatecity.in/v1/countries');
+
+        // Log API response
+        if ($response->successful()) {
+            Log::info('Countries API response', ['countries' => $response->json()]);
+        } else {
+            Log::error('Failed to fetch countries from API', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+        }
+
+        $countries1 = $response->successful() ? $response->json() : [];
+
+        // Hardcoded countries for phone codes
+        $countries = [
+            ['code' => '+91', 'name' => 'IN'],
+            ['code' => '+1', 'name' => 'USA'],
+            ['code' => '+44', 'name' => 'UK'],
+            ['code' => '+971', 'name' => 'UAE'],
+            ['code' => '+65', 'name' => 'SG'],
+            ['code' => '+61', 'name' => 'AU'],
+            ['code' => '+81', 'name' => 'JP'],
+            ['code' => '+86', 'name' => 'CN'],
+            ['code' => '+49', 'name' => 'DE'],
+            ['code' => '+33', 'name' => 'FR'],
+            ['code' => '+39', 'name' => 'IT'],
+            ['code' => '+7', 'name' => 'RU'],
+            ['code' => '+34', 'name' => 'ES'],
+            ['code' => '+82', 'name' => 'KR'],
+            ['code' => '+66', 'name' => 'TH'],
+            ['code' => '+92', 'name' => 'PK'],
+            ['code' => '+880', 'name' => 'BD'],
+            ['code' => '+94', 'name' => 'LK'],
+            ['code' => '+60', 'name' => 'MY'],
+            ['code' => '+62', 'name' => 'ID'],
+            ['code' => '+63', 'name' => 'PH'],
+            ['code' => '+20', 'name' => 'EG'],
+            ['code' => '+234', 'name' => 'NG'],
+            ['code' => '+27', 'name' => 'ZA'],
+            ['code' => '+974', 'name' => 'QA'],
+        ];
+
+        // Log data
+        Log::info('Countries1 array passed to view (API)', ['countries1' => $countries1]);
+        Log::info('Countries array (hardcoded)', ['countries' => $countries]);
+        Log::info('Entrepreneur Data', $entrepreneur->toArray());
+
+        $autoDetectedCountry = $this->detectCountryFromPhone($entrepreneur->phone_number);
+        Log::info('Pre-selection values', [
+            'autoDetectedCountry' => $autoDetectedCountry,
+            'business_country' => old('business_country', $entrepreneur->business_country ?? $autoDetectedCountry),
+            'business_state' => old('business_state', $entrepreneur->business_state ?? ''),
+            'business_city' => old('business_city', $entrepreneur->business_city ?? ''),
+            'y_business_country' => old('y_business_country', $entrepreneur->y_business_country ?? $autoDetectedCountry),
+            'y_business_state' => old('y_business_state', $entrepreneur->y_business_state ?? ''),
+            'y_business_city' => old('y_business_city', $entrepreneur->y_business_city ?? '')
+        ]);
+
+        $registratioTypes = [
+            'Propritorship',
+            'Partnership',
+            'Limited Liability Partnership',
+            'Private Limited Company',
+            'Limited Liability Companies',
+            'Other'
+        ];
+
+        $qualifications = [
+            'Undergraduate',
+            'Graduate',
+            'Postgraduate',
+            'Doctorate'
+        ];
+
+        $industries = [
+            'Technology',
+            'Healthcare',
+            'Finance',
+            'E-commerce',
+            'Education',
+            'Food & Beverage',
+            'Real Estate',
+            'Manufacturing',
+            'Energy',
+            'Other'
+        ];
+
+        $businessStages = [
+            'New Startup Idea',
+            'Established Business'
+        ];
+
+        $country = $autoDetectedCountry;
+        $currencySymbol = $this->getCurrencySymbol($country);
+        $investmentRanges = $this->getInvestmentRanges($currencySymbol, $country);
+
+        return view('Auth.admin-edit-entrepreneur', compact(
+            'entrepreneur',
+            'registratioTypes',
+            'countries1',
+            'countries',
+            'qualifications',
+            'industries',
+            'businessStages',
+            'investmentRanges',
+            'autoDetectedCountry'
+        ));
+    }
+
+    public function adminUpdate(Request $request, $id)
+    {
+        $entrepreneur = Entrepreneur::findOrFail($id);
+
+        Log::info('Request data:', $request->all());
+        Log::info('Before update:', [
+            'id' => $entrepreneur->id,
+            'pin_code' => $entrepreneur->pin_code,
+            'video_upload' => $entrepreneur->video_upload
+        ]);
+
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'nullable|string|max:255',
+            'country_code' => 'nullable|string',
+            'phone_number' => 'nullable|string',
+            'business_mobile' => 'nullable',
+            'email' => 'nullable|email|unique:entrepreneurs,email,' . $entrepreneur->id,
+            'country' => 'nullable|string',
+            'state' => 'nullable|string',
+            'city' => 'nullable|string',
+            'pin_code' => 'nullable|digits_between:5,6',
+            'dob' => 'nullable|before:today',
+            'qualification' => 'nullable|string',
+            'age' => 'nullable|integer|min:18',
+            'business_name' => 'nullable|string|max:255',
+            'brand_name' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string|max:255',
+            'business_describe' => 'nullable|string|max:75',
+            'business_country' => 'nullable|string',
+            'business_state' => 'nullable|string',
+            'business_city' => 'nullable|string',
+            'industry' => 'nullable|string',
+            'own_fund' => 'nullable|numeric|min:0',
+            'loan' => 'nullable|numeric|min:0',
+            'founder_number' => 'nullable|numeric',
+            'invested_amount' => 'nullable|numeric|min:0',
+            'market_capital' => 'nullable|numeric|min:1',
+            'your_stake' => 'nullable|numeric|min:1|max:100',
+            'stake_funding' => 'nullable|numeric|min:0',
+            'y_market_capital' => 'nullable|numeric|min:1',
+            'y_your_stake' => 'nullable|numeric|min:1|max:100',
+            'y_stake_funding' => 'nullable|numeric|min:0',
+            'business_logo' => 'nullable|image|mimes:jpg,jpeg,png',
+            'product_photos' => 'nullable|array|min:1|max:3',
+            'website_links' => 'nullable|url',
+            'video_upload' => 'nullable|file|mimes:mp4,mov,avi,webm',
+            'pitch_deck' => 'nullable|file|mimes:pdf',
+            'agreed_to_terms' => 'nullable|accepted',
+            'y_business_logo' => 'nullable|image|mimes:jpg,jpeg,png',
+            'y_product_photos' => 'nullable|array|min:1|max:3',
+            'y_pitch_deck' => 'nullable|file|mimes:pdf',
+            'y_brand_name' => 'nullable|string|max:255',
+            'y_describe_business' => 'nullable|string|max:75',
+            'y_business_address' => 'nullable|string|max:255',
+            'y_business_country' => 'nullable|string',
+            'y_business_state' => 'nullable|string',
+            'business_revenue1' => 'nullable',
+            'business_revenue2' => 'nullable',
+            'business_revenue3' => 'nullable',
+            'y_business_city' => 'nullable|string',
+            'y_zipcode' => 'nullable|string|regex:/^[0-9]{6}$/',
+            'y_type_industries' => 'nullable|string',
+            'y_own_fund' => 'nullable|numeric|min:0',
+            'y_loan' => 'nullable|numeric|min:0',
+            'tax_registration_number' => 'nullable|string',
+            'y_invested_amount' => 'nullable|numeric|min:0',
+            'employee_number' => 'nullable|integer|min:0',
+            'business_email' => 'nullable|email',
+            'business_year' => 'nullable|integer|min:' . (date('Y') - 50) . '|max:' . (date('Y') - 1),
+        ]);
+
+        if ($validator->fails()) {
+            Log::warning('Validation failed:', $validator->errors()->toArray());
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Handle file uploads for non-y_ fields
+        $pitchDeckPath = $entrepreneur->pitch_deck;
+        if ($request->hasFile('pitch_deck')) {
+            $file = $request->file('pitch_deck');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $pitchDeckPath = $file->storeAs('pitch_decks', $filename, 'public');
+            Log::info('Pitch deck uploaded:', ['path' => $pitchDeckPath]);
+        }
+
+        $businessLogoPath = $entrepreneur->business_logo;
+        if ($request->hasFile('business_logo')) {
+            $file = $request->file('business_logo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $businessLogoPath = $file->storeAs('business_logos', $filename, 'public');
+            Log::info('Business logo uploaded:', ['path' => $businessLogoPath]);
+        }
+
+        $productPhotosPaths = $entrepreneur->product_photos ? json_decode($entrepreneur->product_photos, true) : [];
+        if ($request->hasFile('product_photos')) {
+            $productPhotos = $request->file('product_photos');
+            $newPhotos = [];
+            foreach ($productPhotos as $photo) {
+                if (count($newPhotos) < 3) {
+                    $filename = time() . '_photo_' . $photo->getClientOriginalName();
+                    $newPhotos[] = $photo->storeAs('product_photos', $filename, 'public');
+                }
+            }
+            $productPhotosPaths = array_merge($productPhotosPaths, $newPhotos);
+            $productPhotosPaths = array_slice($productPhotosPaths, -3);
+            Log::info('Product photos uploaded:', ['count' => count($newPhotos), 'paths' => $newPhotos]);
+        }
+
+        // Handle file uploads for y_ fields
+        $businessLogoPathY = $entrepreneur->y_business_logo;
+        if ($request->hasFile('y_business_logo')) {
+            $logoY = $request->file('y_business_logo');
+            $logoNameY = time() . '_logo_' . $logoY->getClientOriginalName();
+            $businessLogoPathY = $logoY->storeAs('y_business_logos', $logoNameY, 'public');
+            Log::info('Y Business logo uploaded:', ['path' => $businessLogoPathY]);
+        }
+
+        $productPhotosPathsY = $entrepreneur->y_product_photos ? json_decode($entrepreneur->y_product_photos, true) : [];
+        if ($request->hasFile('y_product_photos')) {
+            $productPhotosY = [];
+            foreach ($request->file('y_product_photos') as $index => $photoY) {
+                if ($photoY && $photoY->isValid()) {
+                    $photoName = time() . '_photo_' . $index . '_' . $photoY->getClientOriginalName();
+                    $photoPathY = $photoY->storeAs('y_product_photos', $photoName, 'public');
+                    $productPhotosY[] = $photoPathY;
+                    Log::info('Y Product photo uploaded:', ['index' => $index, 'path' => $photoPathY]);
+                } else {
+                    Log::error('Invalid Y photo at index:', ['index' => $index]);
+                }
+            }
+            $productPhotosPathsY = array_merge($productPhotosPathsY, $productPhotosY);
+            $productPhotosPathsY = array_slice($productPhotosPathsY, -3);
+        } else {
+            Log::info('No Y product photos uploaded');
+        }
+
+        $pitchDeckPathY = $entrepreneur->y_pitch_deck;
+        if ($request->hasFile('y_pitch_deck')) {
+            $file = $request->file('y_pitch_deck');
+            $filenameY = time() . '_' . $file->getClientOriginalName();
+            $pitchDeckPathY = $file->storeAs('y_pitch_decks', $filenameY, 'public');
+            Log::info('Y Pitch deck uploaded:', ['path' => $pitchDeckPathY]);
+        }
+
+        // Handle video upload to BunnyCDN
+        $videoUploadPath = $entrepreneur->video_upload;
+        if ($request->hasFile('video_upload')) {
+            $video = $request->file('video_upload');
+            $videoName = time() . '_video_' . $video->getClientOriginalName();
+            $videoPath = 'video/' . $videoName;
+
+            try {
+                $client = new \GuzzleHttp\Client();
+                $response = $client->put("https://storage.bunnycdn.com/futuretaikun/{$videoPath}", [
+                    'headers' => [
+                        'AccessKey' => env('BUNNYCDN_API_KEY'),
+                        'Content-Type' => $video->getClientMimeType(),
+                    ],
+                    'body' => fopen($video->getRealPath(), 'r'),
+                ]);
+
+                if ($response->getStatusCode() === 201 || $response->getStatusCode() === 200) {
+                    $videoUploadPath = "https://futuretaikun.b-cdn.net/{$videoPath}";
+                    Log::info('New video uploaded to BunnyCDN:', ['url' => $videoUploadPath]);
+
+                    if ($entrepreneur->video_upload && $entrepreneur->video_upload != $videoUploadPath) {
+                        $this->deleteOldVideo($entrepreneur->video_upload);
+                    }
+                } else {
+                    Log::error('Failed to upload video to BunnyCDN', ['status' => $response->getStatusCode()]);
+                    return redirect()->back()->withErrors(['video_upload' => 'Failed to upload video to BunnyCDN'])->withInput();
+                }
+            } catch (\Exception $e) {
+                Log::error('BunnyCDN upload error:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+                return redirect()->back()->withErrors(['video_upload' => 'Error uploading video'])->withInput();
+            }
+        } else {
+            Log::info('No video uploaded - keeping existing video', ['video_upload' => $videoUploadPath]);
+        }
+
+        // Update entrepreneur data
+        $updateData = [
+            'full_name' => $request->full_name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'business_mobile' => $request->business_mobile,
+            'country' => $request->country,
+            'country_code' => $request->country_code,
+            'state' => $request->state,
+            'city' => $request->city,
+            'pin_code' => $request->pin_code,
+            'dob' => $request->dob,
+            'qualification' => $request->qualification,
+            'age' => $request->age,
+            'business_name' => $request->business_name,
+            'brand_name' => $request->brand_name,
+            'business_address' => $request->business_address,
+            'business_describe' => $request->business_describe,
+            'business_country' => $request->business_country,
+            'business_state' => $request->business_state,
+            'business_city' => $request->business_city,
+            'industry' => $request->industry,
+            'own_fund' => $request->own_fund,
+            'loan' => $request->loan,
+            'invested_amount' => $request->invested_amount,
+            'market_capital' => $request->market_capital,
+            'your_stake' => $request->your_stake,
+            'stake_funding' => $request->stake_funding,
+            'y_market_capital' => $request->y_market_capital,
+            'y_your_stake' => $request->y_your_stake,
+            'y_stake_funding' => $request->y_stake_funding,
+            'business_logo' => $businessLogoPath,
+            'product_photos' => json_encode($productPhotosPaths),
+            'website_links' => $request->website_links,
+            'video_upload' => $videoUploadPath,
+            'pitch_deck' => $pitchDeckPath,
+            'agreed_to_terms' => $request->has('agreed_to_terms'),
+            'is_verified' => true,
+            'employee_number' => $request->employee_number,
+            'y_business_name' => $request->y_business_name,
+            'y_brand_name' => $request->y_brand_name,
+            'y_describe_business' => $request->y_describe_business,
+            'y_business_address' => $request->y_business_address,
+            'y_business_country' => $request->y_business_country,
+            'y_business_state' => $request->y_business_state,
+            'y_business_city' => $request->y_business_city,
+            'y_pitch_deck' => $pitchDeckPathY,
+            'y_zipcode' => $request->y_zipcode,
+            'y_type_industries' => $request->y_type_industries,
+            'y_own_fund' => $request->y_own_fund,
+            'founder_number' => $request->founder_number,
+            'y_loan' => $request->y_loan,
+            'tax_registration_number' => $request->tax_registration_number,
+            'business_revenue1' => $request->business_revenue1,
+            'business_revenue2' => $request->business_revenue2,
+            'business_revenue3' => $request->business_revenue3,
+            'y_invested_amount' => $request->y_invested_amount,
+            'y_business_logo' => $businessLogoPathY,
+            'business_email' => $request->business_email,
+            'y_product_photos' => json_encode($productPhotosPathsY),
+            'business_year' => $request->business_year,
+        ];
+
+        // Log the update data before filtering
+        Log::info('Update data before filtering:', $updateData);
+
+        // Remove null values to avoid overwriting existing data with null
+        $updateData = array_filter($updateData, function ($value) {
+            return !is_null($value);
+        });
+
+        // Log the update data after filtering
+        Log::info('Update data after filtering:', $updateData);
+
+        try {
+            $result = $entrepreneur->update($updateData);
+            Log::info('Entrepreneur update attempt:', [
+                'success' => $result,
+                'data' => $updateData,
+                'video_upload' => $updateData['video_upload'] ?? 'Not set'
+            ]);
+
+            if ($result) {
+                $entrepreneur->refresh();
+                Log::info('Entrepreneur updated successfully:', [
+                    'id' => $entrepreneur->id,
+                    'pin_code' => $entrepreneur->pin_code,
+                    'video_upload' => $entrepreneur->video_upload
+                ]);
+            } else {
+                Log::warning('Entrepreneur update failed:', ['id' => $entrepreneur->id]);
+                return redirect()->back()->with('error', 'Failed to update entrepreneur profile.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Update exception:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('error', 'An error occurred while updating the profile.');
+        }
+
+        return redirect()->route('admin.entrepreneur.edit', ['id' => $entrepreneur->id])
+            ->with('success', 'Entrepreneur profile updated successfully!');
+    }
+
     private function deleteOldVideo($videoUrl)
     {
         try {

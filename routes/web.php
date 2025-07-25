@@ -96,6 +96,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::put('/settings/{id}', [SettingController::class, 'update'])->name('settings.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+    Route::get('/admin/entrepreneur/edit/{id}', [EntrepreneurController::class, 'adminEdit'])->name('admin.entrepreneur.edit');
+    Route::post('/admin/entrepreneur/update/{id}', [EntrepreneurController::class, 'adminUpdate'])->name('admin.entrepreneur.update');
     // Route::post('/logout', function () {
     //     Auth::logout();
     //     return redirect('/login');

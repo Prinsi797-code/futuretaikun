@@ -626,6 +626,7 @@
                                     <th scope="col" style="min-width: 80px;">Reject</th>
                                     <th scope="col" style="min-width: 80px;">Youtube Link</th>
                                     <th scope="col" style="min-width: 80px;">Edit Image</th>
+                                    <th scope="col" style="min-width: 80px;">Edit Profile</th>
                                     <th scope="col" style="min-width: 80px;">Reminder</th>
                                     <th scope="col" style="min-width: 80px;">Approved</th>
                                 @endif
@@ -734,7 +735,10 @@
                                                 Products/Logo
                                             </button>
                                         </td>
-
+                                        <td>
+                                            <a href="{{ route('admin.entrepreneur.edit', $entrepreneurs->id) }}"
+                                                class="btn btn-sm btn-primary">Edit</a>
+                                        </td>
                                         <td>
                                             <button class="btn btn-sm btn-primary mail-send" data-id="{{ $entrepreneurs->id }}"
                                                 data-name="{{ $entrepreneurs->full_name }}"
