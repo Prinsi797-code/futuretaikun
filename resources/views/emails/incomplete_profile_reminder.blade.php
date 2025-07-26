@@ -13,7 +13,7 @@
                 <table width="600" cellspacing="0" cellpadding="0"
                     style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
                     <tr>
-                        <td style="background-color: #6f2402; padding: 20px; text-align: center;">
+                        <td style="background-color: #003366;; padding: 20px; text-align: center;">
                             <h1 style="color: white; margin: 0; font-size: 24px;">Future Taikun</h1>
                         </td>
                     </tr>
@@ -33,7 +33,7 @@
 
                             <p style="text-align: center; margin: 30px 0;">
                                 <a href="{{ route('login') }}"
-                                    style="background-color: #6f2402; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; display: inline-block;">
+                                    style="background-color: #003366; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 6px; display: inline-block;">
                                     Complete Your Profile
                                 </a>
                             </p>
