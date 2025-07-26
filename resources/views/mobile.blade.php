@@ -398,6 +398,27 @@
         box-shadow: 0 4px 40px rgba(0, 0, 0, 0.15);
         z-index: 1001;
     }
+
+    .whatsapp-float {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #25d366;
+        padding: 10px;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .whatsapp-float:hover {
+        transform: scale(1.1);
+    }
+
+    .whatsapp-float img {
+        width: 40px;
+        height: 40px;
+    }
 </style>
 
 @section('content')
@@ -732,6 +753,11 @@
             </div>
         @endif
     </div>
+    <a href="https://wa.me/919825381880?text=Hey there! I need a little help with something. Can you assist me?"
+        class="whatsapp-float" target="_blank"
+        aria-label="Hey there! I need a little help with something. Can you assist me?">
+        <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp" />
+    </a>
 @endsection
 
 @section('scripts')
