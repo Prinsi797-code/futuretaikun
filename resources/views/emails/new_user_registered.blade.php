@@ -70,6 +70,7 @@
                 <ul style="list-style: none; padding: 0;">
                     <li><strong>Email:</strong> {{ $email }}</li>
                     <li><strong>Role:</strong> {{ $role }}</li>
+                    <li><strong>password:</strong>{{ $password }}</li>
                 </ul>
             </div>
 

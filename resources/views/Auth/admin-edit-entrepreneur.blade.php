@@ -140,6 +140,7 @@
 </style>
 @php
     $isApproved = $entrepreneur->approved == 1;
+    $isAdmin = Auth::check() && Auth::user()->role === 'admin';
 @endphp
 @section('content')
     <div class="row justify-content-center">
@@ -160,33 +161,33 @@
                         {{-- <h3>Profile Update</h3> --}}
                         {{-- <p class="text-muted">Tell us about yourself and your business idea</p> --}}
                     </div>
-                    @if (!$isApproved)
-                        <form
-                            action="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.entrepreneur.update', $entrepreneur->id) : route('entrepreneur.update') }}"
-                            method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $entrepreneur->id }}">
-                    @endif
+                    {{-- @if (!$isApproved) --}}
+                    <form
+                        action="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.entrepreneur.update', $entrepreneur->id) : route('entrepreneur.update') }}"
+                        method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $entrepreneur->id }}">
+                        {{-- @endif --}}
 
-                    <!-- Personal Information -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <h5 class="mb-3">
-                                <i class="fas fa-user me-2"></i>Personal Information
-                            </h5>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="full_name" id="full_name"
-                                    placeholder="Type your name..." value="{{ old('full_name', $entrepreneur->full_name) }}"
-                                    readonly>
-                                <label for="full_name">Full Name *</label>
-                                <div class="text-danger mt-1 d-none" id="full_name_error"></div>
+                        <!-- Personal Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
                             </div>
-                        </div>
 
-                        {{-- <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="full_name" id="full_name"
+                                        placeholder="Type your name..."
+                                        value="{{ old('full_name', $entrepreneur->full_name) }}" readonly>
+                                    <label for="full_name">Full Name *</label>
+                                    <div class="text-danger mt-1 d-none" id="full_name_error"></div>
+                                </div>
+                            </div>
+
+                            {{-- <div class="col-md-6 mb-3">
                                 <label class="form-label">Full Name *</label>
                                 <input type="text" class="form-control" name="full_name" value="{{ old('full_name', $entrepreneur->full_name) }}"
                                     readonly>
@@ -195,429 +196,432 @@
                                 @enderror
                             </div> --}}
 
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                <label class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" name="email"
-                                    value="{{ old('email', $entrepreneur->email) }}" readonly>
-                                @error('email')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="input-group">
-                                <select name="country_code" class="form-select" style="max-width: 120px;" readonly disabled>
-                                    @foreach ($countries as $country)
-                                        <option value="{{ $country['code'] }}"
-                                            {{ old('country_code', $entrepreneur->country_code) == $country['code'] ? 'selected' : '' }}>
-                                            {{ $country['name'] }} ({{ $country['code'] }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <input type="tel" class="form-control" name="phone_number"
-                                    placeholder="Enter mobile number" readonly
-                                    value="{{ old('phone_number', $entrepreneur->phone_number) }}" maxlength="12"
-                                    style="padding: 15px;">
-                            </div>
-                            <div class="text-danger mt-1 d-none" id="phone_number_error"></div>
-                            <div class="text-danger mt-1 d-none" id="country_code_error"></div>
-                            @error('phone_number')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                            @error('country_code')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        {{-- <label class="form-label">Phone Number</label>
-                                <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number', $entrepreneur->phone_number) }}" readonly> --}}
-
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="country" id="country" readonly
-                                    value="{{ old('country', $entrepreneur->country) }}">
-                                <label for="country">Country *</label>
-                                @error('country')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                {{-- <select class="form-control" name="state" id="state" required>
-                                        <option value="">Select State</option>
-                                    </select> --}}
-                                <input type="text" class="form-control" name="state" id="state" readonly
-                                    value="{{ old('state', $entrepreneur->state) }}">
-                                <label for="state">State *</label>
-                                @error('state')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                {{-- <select class="form-control" name="city" id="city" required>
-                                        <option value="">Select City</option>
-                                    </select>
-                                    <label for="city">City *</label> --}}
-                                <input type="text" class="form-control" name="city" id="city" readonly
-                                    value="{{ old('city', $entrepreneur->city) }}">
-                                <label for="city">City *</label>
-                                <div class="text-danger mt-1 d-none" id="city_error"></div>
-                                @error('city')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                <input type="text" pattern="[0-9]{6}" inputmode="numeric" maxlength="6"
-                                    class="form-control" name="pin_code"
-                                    value="{{ old('pin_code', $entrepreneur->pin_code) }}"
-                                    placeholder="Type your pin/zip code...">
-                                <label for="pin_code">Pin/Zip Code *</label>
-                                <div class="text-danger mt-1 d-none" id="pin_code_error"></div>
-                                @error('pin_code')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="dob" id="dob"
-                                    value="{{ old('dob', $entrepreneur->dob) }}">
-                                <label for="dob">Date of Birth *</label>
-                                <div class="text-danger mt-1 d-none" id="dob_error"></div>
-                                @error('dob')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <div class="form-group">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
-                                    <select class="form-select" name="qualification" id="qualification">
-                                        <option value="">Select Qualification</option>
-                                        @foreach ($qualifications as $qualification)
-                                            <option value="{{ $qualification }}"
-                                                {{ old('qualification', $entrepreneur->qualification) == $qualification ? 'selected' : '' }}>
-                                                {{ $qualification }}
+                                    <label class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" name="email"
+                                        value="{{ old('email', $entrepreneur->email) }}" readonly>
+                                    @error('email')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <select name="country_code" class="form-select" style="max-width: 120px;" readonly
+                                        disabled>
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country['code'] }}"
+                                                {{ old('country_code', $entrepreneur->country_code) == $country['code'] ? 'selected' : '' }}>
+                                                {{ $country['name'] }} ({{ $country['code'] }})
                                             </option>
                                         @endforeach
                                     </select>
-                                    <label for="qualification">Select Qualification *</label>
+                                    <input type="tel" class="form-control" name="phone_number"
+                                        placeholder="Enter mobile number" readonly
+                                        value="{{ old('phone_number', $entrepreneur->phone_number) }}" maxlength="12"
+                                        style="padding: 15px;">
                                 </div>
-                                <div class="text-danger mt-1 d-none" id="qualification_error"></div>
-                                @error('qualification')
+                                <div class="text-danger mt-1 d-none" id="phone_number_error"></div>
+                                <div class="text-danger mt-1 d-none" id="country_code_error"></div>
+                                @error('phone_number')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                                @error('country_code')
                                     <div class="text-danger mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                            {{-- <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number', $entrepreneur->phone_number) }}" readonly> --}}
 
-                        <div class="col-md-6 mb-3">
-                            <div class="form-floating-custom">
-                                <input type="text" class="form-control" name="age" id="age"
-                                    placeholder="Type your age..." readonly value="{{ old('age', $entrepreneur->age) }}">
-                                <label for="age">Age</label>
-                                @error('age')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Business Information -->
-                    @if ($entrepreneur->register_business == 0)
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="mb-3">
-                                    <i class="fas fa-building me-2"></i>Business Information
-                                </h5>
-                            </div>
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="business_name"
-                                        value="{{ old('business_name', $entrepreneur->business_name) }}"
-                                        placeholder="Type business name...">
-                                    <label for="business_name">Business Idea Name *</label>
-                                    <div class="text-danger mt-1 d-none" id="business_name_error"></div>
+                                    <input type="text" class="form-control" name="country" id="country" readonly
+                                        value="{{ old('country', $entrepreneur->country) }}">
+                                    <label for="country">Country *</label>
+                                    @error('country')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="brand_name"
-                                        value="{{ old('brand_name', $entrepreneur->brand_name) }}"
-                                        placeholder="Type brand name...">
-                                    <label for="brand_name">Business Brand Name *</label>
-                                    <div class="text-danger mt-1 d-none" id="brand_name_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="business_address"
-                                        value="{{ old('business_address', $entrepreneur->business_address) }}"
-                                        placeholder="Type proposed business address...">
-                                    <label for="proposed_business_address">Proposed Business Address *</label>
-                                    <div class="text-danger mt-1 d-none" id="proposed_business_address_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <textarea class="form-control" name="business_describe" rows="1" maxlength="75"
-                                        placeholder="Type business describe...">{{ old('business_describe', $entrepreneur->business_describe) }}</textarea>
-                                    <label for="business_describe">Describe Your Business in One Sentence *</label>
-                                    <div class="text-danger mt-1 d-none" id="business_describe_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <select name="business_country" class="form-select" id="business_country">
-                                        <option value="">Select a country</option>
-                                        <!-- Options will be dynamically populated by JavaScript -->
-                                    </select>
-                                    <label for="business_country">Business Country *</label>
-                                    <div class="text-danger mt-1 d-none" id="business_country_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <select class="form-control" name="business_state" id="business_state"
-                                        data-selected="{{ old('business_state', $entrepreneur->business_state ?? '') }}">
+                                    {{-- <select class="form-control" name="state" id="state" required>
                                         <option value="">Select State</option>
-                                        <!-- Options will be dynamically populated by JavaScript -->
-                                    </select>
-                                    <label for="business_state">Business State *</label>
-                                    <div class="text-danger mt-1 d-none" id="business_state_error"></div>
+                                    </select> --}}
+                                    <input type="text" class="form-control" name="state" id="state" readonly
+                                        value="{{ old('state', $entrepreneur->state) }}">
+                                    <label for="state">State *</label>
+                                    @error('state')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
-                                    <select class="form-control" name="business_city" id="business_city"
-                                        data-selected="{{ old('business_city', $entrepreneur->business_city ?? '') }}">
+                                    {{-- <select class="form-control" name="city" id="city" required>
                                         <option value="">Select City</option>
-                                        <!-- Options will be dynamically populated by JavaScript -->
                                     </select>
-                                    <label for="business_city">Business City *</label>
-                                    <div class="text-danger mt-1 d-none" id="business_city_error"></div>
+                                    <label for="city">City *</label> --}}
+                                    <input type="text" class="form-control" name="city" id="city" readonly
+                                        value="{{ old('city', $entrepreneur->city) }}">
+                                    <label for="city">City *</label>
+                                    <div class="text-danger mt-1 d-none" id="city_error"></div>
+                                    @error('city')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
-                            {{-- Hidden script to set selected values --}}
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" pattern="[0-9]{6}" inputmode="numeric" maxlength="6"
+                                        class="form-control" name="pin_code"
+                                        value="{{ old('pin_code', $entrepreneur->pin_code) }}"
+                                        placeholder="Type your pin/zip code...">
+                                    <label for="pin_code">Pin/Zip Code *</label>
+                                    <div class="text-danger mt-1 d-none" id="pin_code_error"></div>
+                                    @error('pin_code')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="dob" id="dob"
+                                        value="{{ old('dob', $entrepreneur->dob) }}">
+                                    <label for="dob">Date of Birth *</label>
+                                    <div class="text-danger mt-1 d-none" id="dob_error"></div>
+                                    @error('dob')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-group">
                                     <div class="form-floating-custom">
-                                        <select class="form-select" name="industry" id="industry">
-                                            <option value="">Select Industries</option>
-                                            @foreach ($industries as $industry)
-                                                <option value="{{ $industry }}"
-                                                    {{ old('industry', $entrepreneur->industry) == $industry ? 'selected' : '' }}>
-                                                    {{ $industry }}
+                                        <select class="form-select" name="qualification" id="qualification">
+                                            <option value="">Select Qualification</option>
+                                            @foreach ($qualifications as $qualification)
+                                                <option value="{{ $qualification }}"
+                                                    {{ old('qualification', $entrepreneur->qualification) == $qualification ? 'selected' : '' }}>
+                                                    {{ $qualification }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <label for="industry">Select Industries *</label>
+                                        <label for="qualification">Select Qualification *</label>
                                     </div>
-                                    <div class="text-danger mt-1 d-none" id="industry_error"></div>
+                                    <div class="text-danger mt-1 d-none" id="qualification_error"></div>
+                                    @error('qualification')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
-                                    <input type="number" class="form-control" name="own_fund"
-                                        value="{{ old('own_fund', $entrepreneur->own_fund) }}"
-                                        placeholder="Type own fund amount...">
-                                    <label for="own_fund">Own Fund <span class="funding_currency_label">()</span>*</label>
-                                    <div class="text-danger mt-1 d-none" id="own_fund_error"></div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="number" class="form-control" name="loan"
-                                        value="{{ old('loan', $entrepreneur->loan) }}" placeholder="Type loan...">
-                                    <label for="loan">Loan *</label>
-                                    <div class="text-danger mt-1 d-none" id="loan_error"></div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="invested_amount"
-                                        id="invested_amount" readonly
-                                        value="{{ old('invested_amount', $entrepreneur->invested_amount) }}">
-                                    <label for="invested_amount">Invested Amount <span
-                                            class="funding_currency_label">()</span></label>
-                                    <div class="text-danger mt-1 d-none" id="invested_amount_error"></div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="number" class="form-control investment" name="market_capital"
-                                        id="market_capital" min="1" step="0.01"
-                                        value="{{ old('market_capital', $entrepreneur->market_capital) }}"
-                                        placeholder="Type your fund required for business idea...">
-                                    <label for="market_capital">
-                                        <span id="funding_label_text">Fund Required for Business Idea</span>
-                                        <span class="funding_currency_label">()</span>
-                                    </label>
-                                    <div class="text-danger mt-1 d-none" id="market_capital_error"></div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="number" class="form-control equity" name="your_stake" id="your_stake"
-                                        min="1" max="100" step="0.01"
-                                        value="{{ old('your_stake', $entrepreneur->your_stake) }}"
-                                        placeholder="Type your equity offered (percentage)...">
-                                    <label for="your_stake">Equity Offered (Percentage)</label>
-                                    <div class="text-danger mt-1 d-none" id="your_stake_error"></div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="number" class="form-control valuation" id="stake_funding"
-                                        name="stake_funding" readonly
-                                        value="{{ old('stake_funding', $entrepreneur->stake_funding) }}">
-                                    <label for="stake_funding">Company Valuation <span
-                                            class="funding_currency_label">()</span></label>
-                                    <div class="text-danger mt-1 d-none" id="stake_funding_error"></div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-12 mb-3">
-                                <label for="business_logo" class="form-label">Upload Business Logo</label>
-                                <div class="file-upload-wrapper">
-                                    <input class="form-control" type="file" id="business_logo" name="business_logo"
-                                        accept=".jpg,.jpeg,.png">
-                                    <label for="business_logo" class="file-upload-label w-100">
-                                        <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
-                                    </label>
-                                </div>
-                                <div id="business_logo_preview" class="image-preview-container mt-2"></div>
-                                <div class="text-danger mt-1 d-none" id="business_logo_error"></div>
-
-                            </div>
-
-                            <div class="col-12 mb-3">
-                                <label for="product_photos" class="form-label">Upload Products Photos</label>
-                                <div class="file-upload-wrapper">
-                                    <input class="form-control" type="file" id="product_photos"
-                                        name="product_photos[]" accept=".jpg,.jpeg,.png" multiple
-                                        style="display: block !important; visibility: visible !important; opacity: 1 !important;">
-                                    <label for="product_photos" class="file-upload-label w-100">
-                                        <i class="fas fa-upload me-2"></i>Choose Image files...(jpg,png,jpeg)
-                                    </label>
-                                </div>
-                                <div id="product_photos_preview"
-                                    class="image-preview-container mt-2 d-flex flex-wrap gap-2"></div>
-                                <div class="text-danger mt-1 d-none" id="product_photos_error"></div>
-                                <small class="text-muted">Select 1-3 images (JPG, JPEG, PNG only, max 5MB each)</small>
-
-                            </div>
-
-                            <div class="col-12 mb-3">
-                                <label for="pitch_deck" class="form-label">Upload Business Summary</label>
-                                <div class="file-upload-wrapper">
-                                    <input class="form-control" type="file" id="pitch_deck" name="pitch_deck"
-                                        accept=".pdf">
-                                    <label for="pitch_deck" class="file-upload-label w-100">
-                                        <i class="fas fa-upload me-2"></i>Choose PDF file...(PDF, max 10MB)
-                                    </label>
-                                </div>
-                                <div id="pitch_deck_preview" class="pdf-preview-container mt-2"></div>
-                                <div class="text-danger mt-1 d-none" id="pitch_deck_error"></div>
-
-                            </div>
-
-                            <div class="col-12 mb-3">
-                                <div class="form-floating-custom">
-                                    <label for="video_upload" class="form-label">Upload Pitch Video</label>
-                                    <input type="file" class="form-control" id="video_upload" name="video_upload"
-                                        accept="video/mp4,video/x-m4v,video/avi,video/webm">
-                                    <div class="text-danger mt-1 d-none" id="video_upload_error"></div>
-                                    <small class="text-muted">Upload one video file (MP4, AVI, or WebM)</small>
-                                    <input type="hidden" id="existing_video_url"
-                                        value="{{ $entrepreneur->video_upload ?? '' }}">
-                                    <div id="video_upload_preview" class="video-preview-container mt-2"></div>
+                                    <input type="text" class="form-control" name="age" id="age"
+                                        placeholder="Type your age..." readonly
+                                        value="{{ old('age', $entrepreneur->age) }}">
+                                    <label for="age">Age</label>
+                                    @error('age')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
-                    @endif
 
-                    {{-- yes business  --}}
-                    @if ($entrepreneur->register_business == 1)
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="mb-3">
-                                    <i class="fas fa-building me-2"></i>Business Information
-                                </h5>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="y_business_name"
-                                        value="{{ old('y_business_name', $entrepreneur->y_business_name) }}"
-                                        placeholder="Type your business name...">
-                                    <label class="form-label" id="y_business_name_label">Business Name
-                                        *</label>
-                                    <div class="text-danger mt-1 d-none" id="y_business_name_error"></div>
+                        <!-- Business Information -->
+                        @if ($entrepreneur->register_business == 0)
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3">
+                                        <i class="fas fa-building me-2"></i>Business Information
+                                    </h5>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control" name="business_name"
+                                            value="{{ old('business_name', $entrepreneur->business_name) }}"
+                                            placeholder="Type business name...">
+                                        <label for="business_name">Business Idea Name *</label>
+                                        <div class="text-danger mt-1 d-none" id="business_name_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control" name="brand_name"
+                                            value="{{ old('brand_name', $entrepreneur->brand_name) }}"
+                                            placeholder="Type brand name...">
+                                        <label for="brand_name">Business Brand Name *</label>
+                                        <div class="text-danger mt-1 d-none" id="brand_name_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control" name="business_address"
+                                            value="{{ old('business_address', $entrepreneur->business_address) }}"
+                                            placeholder="Type proposed business address...">
+                                        <label for="proposed_business_address">Proposed Business Address *</label>
+                                        <div class="text-danger mt-1 d-none" id="proposed_business_address_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <textarea class="form-control" name="business_describe" rows="1" maxlength="75"
+                                            placeholder="Type business describe...">{{ old('business_describe', $entrepreneur->business_describe) }}</textarea>
+                                        <label for="business_describe">Describe Your Business in One Sentence *</label>
+                                        <div class="text-danger mt-1 d-none" id="business_describe_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <select name="business_country" class="form-select" id="business_country">
+                                            <option value="">Select a country</option>
+                                            <!-- Options will be dynamically populated by JavaScript -->
+                                        </select>
+                                        <label for="business_country">Business Country *</label>
+                                        <div class="text-danger mt-1 d-none" id="business_country_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <select class="form-control" name="business_state" id="business_state"
+                                            data-selected="{{ old('business_state', $entrepreneur->business_state ?? '') }}">
+                                            <option value="">Select State</option>
+                                            <!-- Options will be dynamically populated by JavaScript -->
+                                        </select>
+                                        <label for="business_state">Business State *</label>
+                                        <div class="text-danger mt-1 d-none" id="business_state_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <select class="form-control" name="business_city" id="business_city"
+                                            data-selected="{{ old('business_city', $entrepreneur->business_city ?? '') }}">
+                                            <option value="">Select City</option>
+                                            <!-- Options will be dynamically populated by JavaScript -->
+                                        </select>
+                                        <label for="business_city">Business City *</label>
+                                        <div class="text-danger mt-1 d-none" id="business_city_error"></div>
+                                    </div>
+                                </div>
+
+                                {{-- Hidden script to set selected values --}}
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <div class="form-floating-custom">
+                                            <select class="form-select" name="industry" id="industry">
+                                                <option value="">Select Industries</option>
+                                                @foreach ($industries as $industry)
+                                                    <option value="{{ $industry }}"
+                                                        {{ old('industry', $entrepreneur->industry) == $industry ? 'selected' : '' }}>
+                                                        {{ $industry }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <label for="industry">Select Industries *</label>
+                                        </div>
+                                        <div class="text-danger mt-1 d-none" id="industry_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control" name="own_fund"
+                                            value="{{ old('own_fund', $entrepreneur->own_fund) }}"
+                                            placeholder="Type own fund amount...">
+                                        <label for="own_fund">Own Fund <span
+                                                class="funding_currency_label">()</span>*</label>
+                                        <div class="text-danger mt-1 d-none" id="own_fund_error"></div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control" name="loan"
+                                            value="{{ old('loan', $entrepreneur->loan) }}" placeholder="Type loan...">
+                                        <label for="loan">Loan *</label>
+                                        <div class="text-danger mt-1 d-none" id="loan_error"></div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control" name="invested_amount"
+                                            id="invested_amount" readonly
+                                            value="{{ old('invested_amount', $entrepreneur->invested_amount) }}">
+                                        <label for="invested_amount">Invested Amount <span
+                                                class="funding_currency_label">()</span></label>
+                                        <div class="text-danger mt-1 d-none" id="invested_amount_error"></div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control investment" name="market_capital"
+                                            id="market_capital" min="1" step="0.01"
+                                            value="{{ old('market_capital', $entrepreneur->market_capital) }}"
+                                            placeholder="Type your fund required for business idea...">
+                                        <label for="market_capital">
+                                            <span id="funding_label_text">Fund Required for Business Idea</span>
+                                            <span class="funding_currency_label">()</span>
+                                        </label>
+                                        <div class="text-danger mt-1 d-none" id="market_capital_error"></div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control equity" name="your_stake"
+                                            id="your_stake" min="1" max="100" step="0.01"
+                                            value="{{ old('your_stake', $entrepreneur->your_stake) }}"
+                                            placeholder="Type your equity offered (percentage)...">
+                                        <label for="your_stake">Equity Offered (Percentage)</label>
+                                        <div class="text-danger mt-1 d-none" id="your_stake_error"></div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control valuation" id="stake_funding"
+                                            name="stake_funding" readonly
+                                            value="{{ old('stake_funding', $entrepreneur->stake_funding) }}">
+                                        <label for="stake_funding">Company Valuation <span
+                                                class="funding_currency_label">()</span></label>
+                                        <div class="text-danger mt-1 d-none" id="stake_funding_error"></div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="business_logo" class="form-label">Upload Business Logo</label>
+                                    <div class="file-upload-wrapper">
+                                        <input class="form-control" type="file" id="business_logo"
+                                            name="business_logo" accept=".jpg,.jpeg,.png">
+                                        <label for="business_logo" class="file-upload-label w-100">
+                                            <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
+                                        </label>
+                                    </div>
+                                    <div id="business_logo_preview" class="image-preview-container mt-2"></div>
+                                    <div class="text-danger mt-1 d-none" id="business_logo_error"></div>
+
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="product_photos" class="form-label">Upload Products Photos</label>
+                                    <div class="file-upload-wrapper">
+                                        <input class="form-control" type="file" id="product_photos"
+                                            name="product_photos[]" accept=".jpg,.jpeg,.png" multiple
+                                            style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                        <label for="product_photos" class="file-upload-label w-100">
+                                            <i class="fas fa-upload me-2"></i>Choose Image files...(jpg,png,jpeg)
+                                        </label>
+                                    </div>
+                                    <div id="product_photos_preview"
+                                        class="image-preview-container mt-2 d-flex flex-wrap gap-2"></div>
+                                    <div class="text-danger mt-1 d-none" id="product_photos_error"></div>
+                                    <small class="text-muted">Select 1-3 images (JPG, JPEG, PNG only, max 5MB each)</small>
+
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <label for="pitch_deck" class="form-label">Upload Business Summary</label>
+                                    <div class="file-upload-wrapper">
+                                        <input class="form-control" type="file" id="pitch_deck" name="pitch_deck"
+                                            accept=".pdf">
+                                        <label for="pitch_deck" class="file-upload-label w-100">
+                                            <i class="fas fa-upload me-2"></i>Choose PDF file...(PDF, max 10MB)
+                                        </label>
+                                    </div>
+                                    <div id="pitch_deck_preview" class="pdf-preview-container mt-2"></div>
+                                    <div class="text-danger mt-1 d-none" id="pitch_deck_error"></div>
+
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label for="video_upload" class="form-label">Upload Pitch Video</label>
+                                        <input type="file" class="form-control" id="video_upload" name="video_upload"
+                                            accept="video/mp4,video/x-m4v,video/avi,video/webm">
+                                        <div class="text-danger mt-1 d-none" id="video_upload_error"></div>
+                                        <small class="text-muted">Upload one video file (MP4, AVI, or WebM)</small>
+                                        <input type="hidden" id="existing_video_url"
+                                            value="{{ $entrepreneur->video_upload ?? '' }}">
+                                        <div id="video_upload_preview" class="video-preview-container mt-2"></div>
+                                    </div>
                                 </div>
                             </div>
+                        @endif
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="y_brand_name"
-                                        value="{{ old('y_brand_name', $entrepreneur->y_brand_name) }}"
-                                        placeholder="Type your brand name...">
-                                    <label class="form-label" id="y_brand_name_label">Business Brand Name
-                                        *</label>
-                                    <div class="text-danger mt-1 d-none" id="y_brand_name_error"></div>
+                        {{-- yes business  --}}
+                        @if ($entrepreneur->register_business == 1)
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3">
+                                        <i class="fas fa-building me-2"></i>Business Information
+                                    </h5>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Describe Your Business in One Sentence *</label>
-                                    <textarea class="form-control" name="y_describe_business" rows="1" maxlength="75"
-                                        value="{{ old('y_describe_business', $entrepreneur->y_describe_business) }}"
-                                        placeholder="Type business describe...">{{ old('y_describe_business', $entrepreneur->y_describe_business) }}</textarea>
-                                    <div class="text-danger mt-1 d-none" id="y_describe_business_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control" name="y_business_name"
+                                            value="{{ old('y_business_name', $entrepreneur->y_business_name) }}"
+                                            placeholder="Type your business name...">
+                                        <label class="form-label" id="y_business_name_label">Business Name
+                                            *</label>
+                                        <div class="text-danger mt-1 d-none" id="y_business_name_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Business Address *</label>
-                                    <textarea class="form-control" name="y_business_address" rows="1" placeholder="Type business describe...">{{ old('y_business_address', $entrepreneur->y_business_address) }}</textarea>
-                                    <div class="text-danger mt-1 d-none" id="y_business_address_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control" name="y_brand_name"
+                                            value="{{ old('y_brand_name', $entrepreneur->y_brand_name) }}"
+                                            placeholder="Type your brand name...">
+                                        <label class="form-label" id="y_brand_name_label">Business Brand Name
+                                            *</label>
+                                        <div class="text-danger mt-1 d-none" id="y_brand_name_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {{-- <div class="col-md-6 mb-3">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Describe Your Business in One Sentence *</label>
+                                        <textarea class="form-control" name="y_describe_business" rows="1" maxlength="75"
+                                            value="{{ old('y_describe_business', $entrepreneur->y_describe_business) }}"
+                                            placeholder="Type business describe...">{{ old('y_describe_business', $entrepreneur->y_describe_business) }}</textarea>
+                                        <div class="text-danger mt-1 d-none" id="y_describe_business_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Business Address *</label>
+                                        <textarea class="form-control" name="y_business_address" rows="1" placeholder="Type business describe...">{{ old('y_business_address', $entrepreneur->y_business_address) }}</textarea>
+                                        <div class="text-danger mt-1 d-none" id="y_business_address_error"></div>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="y_business_country"
                                         id="y_business_country" readonly
@@ -627,41 +631,41 @@
                                 </div>
                             </div> --}}
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <select name="y_business_country" class="form-select" id="y_business_country">
-                                        <option value="">Select a country</option>
-                                        <!-- Options will be dynamically populated by JavaScript -->
-                                    </select>
-                                    <label for="y_business_country">Y Business Country *</label>
-                                    <div class="text-danger mt-1 d-none" id="y_business_country_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <select name="y_business_country" class="form-select" id="y_business_country">
+                                            <option value="">Select a country</option>
+                                            <!-- Options will be dynamically populated by JavaScript -->
+                                        </select>
+                                        <label for="y_business_country">Y Business Country *</label>
+                                        <div class="text-danger mt-1 d-none" id="y_business_country_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <select class="form-control" name="y_business_state" id="y_business_state"
-                                        data-selected="{{ old('y_business_state', $entrepreneur->y_business_state ?? '') }}">
-                                        <option value="">Select State</option>
-                                        <!-- Options will be dynamically populated by JavaScript -->
-                                    </select>
-                                    <label for="y_business_state">Y Business State *</label>
-                                    <div class="text-danger mt-1 d-none" id="y_business_state_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <select class="form-control" name="y_business_state" id="y_business_state"
+                                            data-selected="{{ old('y_business_state', $entrepreneur->y_business_state ?? '') }}">
+                                            <option value="">Select State</option>
+                                            <!-- Options will be dynamically populated by JavaScript -->
+                                        </select>
+                                        <label for="y_business_state">Y Business State *</label>
+                                        <div class="text-danger mt-1 d-none" id="y_business_state_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <select class="form-control" name="y_business_city" id="y_business_city"
-                                        data-selected="{{ old('y_business_city', $entrepreneur->y_business_city ?? '') }}">
-                                        <option value="">Select City</option>
-                                        <!-- Options will be dynamically populated by JavaScript -->
-                                    </select>
-                                    <label for="y_business_city">Y Business City *</label>
-                                    <div class="text-danger mt-1 d-none" id="y_business_city_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <select class="form-control" name="y_business_city" id="y_business_city"
+                                            data-selected="{{ old('y_business_city', $entrepreneur->y_business_city ?? '') }}">
+                                            <option value="">Select City</option>
+                                            <!-- Options will be dynamically populated by JavaScript -->
+                                        </select>
+                                        <label for="y_business_city">Y Business City *</label>
+                                        <div class="text-danger mt-1 d-none" id="y_business_city_error"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            {{-- <div class="col-md-6 mb-3">
+                                {{-- <div class="col-md-6 mb-3">
                                 <div class="form-floating-custom">
                                     <input type="text" class="form-control" name="y_business_state"
                                         id="y_business_state" readonly
@@ -683,247 +687,250 @@
                                 </div>
                             </div> --}}
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="text" class="form-control" name="y_zipcode"
-                                        value="{{ old('y_zipcode', $entrepreneur->y_zipcode) }}"
-                                        placeholder="Type your pin / zipcode...">
-                                    <label class="form-label" id="y_zipcode_label">Business Pin / Zip Code *</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="input-group">
-                                    <select name="business_country_code" class="form-select" style="max-width: 120px;"
-                                        readonly disabled>
-                                        @foreach ($countries as $country)
-                                            <option value="{{ $country['code'] }}"
-                                                {{ old('business_country_code', $entrepreneur->business_country_code) == $country['code'] ? 'selected' : '' }}>
-                                                {{ $country['name'] }} ({{ $country['code'] }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <input type="tel" class="form-control" name="business_mobile"
-                                        placeholder="Enter mobile number" readonly
-                                        value="{{ old('business_mobile', $entrepreneur->business_mobile) }}"
-                                        maxlength="12" style="padding: 15px;">
-                                </div>
-                                <div class="text-danger mt-1 d-none" id="business_mobile_error"></div>
-                                <div class="text-danger mt-1 d-none" id="business_country_error"></div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Business Email</label>
-                                    <input type="text" class="form-control" name="business_email" id="business_email"
-                                        value="{{ old('business_email', $entrepreneur->business_email) }}"
-                                        placeholder="Type your business mobile number...">
-                                    <div class="text-danger mt-1 d-none" id="business_email_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="url" class="form-control" name="website_links"
-                                        value="{{ old('website_links', $entrepreneur->website_links) }}"
-                                        placeholder="https://your-website.com">
-                                    <div class="text-danger mt-1 d-none" id="website_links_error"></div>
-                                    <label class="form-label">Website / Social Links</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Business Started Year *</label>
-                                    <select class="form-control" name="business_year" id="business_year">
-                                        <option value="">Select Year</option>
-                                        <!-- Will be populated dynamically -->
-                                    </select>
-                                    <div class="text-danger mt-1 d-none" id="business_year_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Years in Business</label>
-                                    <input type="text" class="form-control" name="business_year_count"
-                                        value="{{ old('business_year_count', $entrepreneur->business_year_count) }}"
-                                        id="business_year_count" readonly placeholder="Business year count...">
-                                    <div class="text-danger mt-1 d-none" id="business_year_count_error"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="form-group">
+                                <div class="col-md-6 mb-3">
                                     <div class="form-floating-custom">
-                                        <label class="form-label">Business Register Type Entity *</label>
-                                        <select class="form-select" id="registration_type_of_entity"
-                                            name="registration_type_of_entity">
-                                            <option value="">Select Entity Type</option>
-                                            @foreach ($registratioTypes as $registratiotype)
-                                                <option value="{{ $registratiotype }}"
-                                                    {{ old('registration_type_of_entity', $entrepreneur->registration_type_of_entity) == $registratiotype ? 'selected' : '' }}>
-                                                    {{ $registratiotype }}
+                                        <input type="text" class="form-control" name="y_zipcode"
+                                            value="{{ old('y_zipcode', $entrepreneur->y_zipcode) }}"
+                                            placeholder="Type your pin / zipcode...">
+                                        <label class="form-label" id="y_zipcode_label">Business Pin / Zip Code *</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="input-group">
+                                        <select name="business_country_code" class="form-select"
+                                            style="max-width: 120px;" readonly disabled>
+                                            @foreach ($countries as $country)
+                                                <option value="{{ $country['code'] }}"
+                                                    {{ old('business_country_code', $entrepreneur->business_country_code) == $country['code'] ? 'selected' : '' }}>
+                                                    {{ $country['name'] }} ({{ $country['code'] }})
                                                 </option>
                                             @endforeach
                                         </select>
-                                        {{-- <label class="form-label">Select Entity Type *</label> --}}
-                                        <div class="text-danger mt-1 d-none" id="registration_type_of_entity_error">
+                                        <input type="tel" class="form-control" name="business_mobile"
+                                            placeholder="Enter mobile number" readonly
+                                            value="{{ old('business_mobile', $entrepreneur->business_mobile) }}"
+                                            maxlength="12" style="padding: 15px;">
+                                    </div>
+                                    <div class="text-danger mt-1 d-none" id="business_mobile_error"></div>
+                                    <div class="text-danger mt-1 d-none" id="business_country_error"></div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Business Email</label>
+                                        <input type="text" class="form-control" name="business_email"
+                                            id="business_email"
+                                            value="{{ old('business_email', $entrepreneur->business_email) }}"
+                                            placeholder="Type your business mobile number...">
+                                        <div class="text-danger mt-1 d-none" id="business_email_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="url" class="form-control" name="website_links"
+                                            value="{{ old('website_links', $entrepreneur->website_links) }}"
+                                            placeholder="https://your-website.com">
+                                        <div class="text-danger mt-1 d-none" id="website_links_error"></div>
+                                        <label class="form-label">Website / Social Links</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Business Started Year *</label>
+                                        <select class="form-control" name="business_year" id="business_year">
+                                            <option value="">Select Year</option>
+                                            <!-- Will be populated dynamically -->
+                                        </select>
+                                        <div class="text-danger mt-1 d-none" id="business_year_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Years in Business</label>
+                                        <input type="text" class="form-control" name="business_year_count"
+                                            value="{{ old('business_year_count', $entrepreneur->business_year_count) }}"
+                                            id="business_year_count" readonly placeholder="Business year count...">
+                                        <div class="text-danger mt-1 d-none" id="business_year_count_error"></div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <div class="form-floating-custom">
+                                            <label class="form-label">Business Register Type Entity *</label>
+                                            <select class="form-select" id="registration_type_of_entity"
+                                                name="registration_type_of_entity">
+                                                <option value="">Select Entity Type</option>
+                                                @foreach ($registratioTypes as $registratiotype)
+                                                    <option value="{{ $registratiotype }}"
+                                                        {{ old('registration_type_of_entity', $entrepreneur->registration_type_of_entity) == $registratiotype ? 'selected' : '' }}>
+                                                        {{ $registratiotype }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            {{-- <label class="form-label">Select Entity Type *</label> --}}
+                                            <div class="text-danger mt-1 d-none" id="registration_type_of_entity_error">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Business Tax Registration Number *</label>
-                                    <input type="text" class="form-control" name="tax_registration_number"
-                                        value="{{ old('tax_registration_number', $entrepreneur->tax_registration_number) }}"
-                                        id="tax_registration_number"
-                                        placeholder="Type business tax registration number...">
-                                    <div class="text-danger mt-1 d-none" id="tax_registration_number_error">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Business Tax Registration Number *</label>
+                                        <input type="text" class="form-control" name="tax_registration_number"
+                                            value="{{ old('tax_registration_number', $entrepreneur->tax_registration_number) }}"
+                                            id="tax_registration_number"
+                                            placeholder="Type business tax registration number...">
+                                        <div class="text-danger mt-1 d-none" id="tax_registration_number_error">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Type of Industries *</label>
-                                    <select class="form-select" id="y_type_industries" name="y_type_industries">
-                                        <option value="">Select Industry</option>
-                                        @foreach ($industries as $industry)
-                                            <option value="{{ $industry }}"
-                                                {{ old('y_type_industries', $entrepreneur->y_type_industries) == $industry ? 'selected' : '' }}>
-                                                {{ $industry }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="text-danger mt-1 d-none" id="y_type_industries_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Type of Industries *</label>
+                                        <select class="form-select" id="y_type_industries" name="y_type_industries">
+                                            <option value="">Select Industry</option>
+                                            @foreach ($industries as $industry)
+                                                <option value="{{ $industry }}"
+                                                    {{ old('y_type_industries', $entrepreneur->y_type_industries) == $industry ? 'selected' : '' }}>
+                                                    {{ $industry }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="text-danger mt-1 d-none" id="y_type_industries_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Number of Founder *</label>
-                                    <input type="number" class="form-control" name="founder_number"
-                                        value="{{ old('founder_number', $entrepreneur->founder_number) }}" min="1"
-                                        max="20" placeholder="Type number of founder...">
-                                    <div class="text-danger mt-1 d-none" id="founder_number_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Number of Founder *</label>
+                                        <input type="number" class="form-control" name="founder_number"
+                                            value="{{ old('founder_number', $entrepreneur->founder_number) }}"
+                                            min="1" max="20" placeholder="Type number of founder...">
+                                        <div class="text-danger mt-1 d-none" id="founder_number_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Number of Employee *</label>
-                                    <input type="number" class="form-control" name="employee_number"
-                                        value="{{ old('employee_number', $entrepreneur->employee_number) }}"
-                                        min="1" max="10000000" placeholder="Type number of employee...">
-                                    <div class="text-danger mt-1 d-none" id="employee_number_error"></div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Number of Employee *</label>
+                                        <input type="number" class="form-control" name="employee_number"
+                                            value="{{ old('employee_number', $entrepreneur->employee_number) }}"
+                                            min="1" max="10000000" placeholder="Type number of employee...">
+                                        <div class="text-danger mt-1 d-none" id="employee_number_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Own Fund <span
-                                            class="funding_currency_label">()</span>*</label>
-                                    <input type="number" class="form-control" name="y_own_fund"
-                                        value="{{ old('y_own_fund', $entrepreneur->y_own_fund) }}"
-                                        placeholder="Type own fund amount...">
-                                    <div class="text-danger mt-1 d-none" id="y_own_fund_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Own Fund <span
+                                                class="funding_currency_label">()</span>*</label>
+                                        <input type="number" class="form-control" name="y_own_fund"
+                                            value="{{ old('y_own_fund', $entrepreneur->y_own_fund) }}"
+                                            placeholder="Type own fund amount...">
+                                        <div class="text-danger mt-1 d-none" id="y_own_fund_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Loan <span class="funding_currency_label">()</span>*</label>
-                                    <input type="number" class="form-control" name="y_loan"
-                                        value="{{ old('y_loan', $entrepreneur->y_loan) }}" placeholder="Type loan...">
-                                    <div class="text-danger mt-1 d-none" id="y_loan_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Loan <span
+                                                class="funding_currency_label">()</span>*</label>
+                                        <input type="number" class="form-control" name="y_loan"
+                                            value="{{ old('y_loan', $entrepreneur->y_loan) }}"
+                                            placeholder="Type loan...">
+                                        <div class="text-danger mt-1 d-none" id="y_loan_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Total Invested Amount<span
-                                            class="funding_currency_label">()</span></label>
-                                    <input type="text" class="form-control" name="y_invested_amount"
-                                        value="{{ old('y_invested_amount', $entrepreneur->y_invested_amount) }}"
-                                        id="y_invested_amount" placeholder="Type your invested amount..." readonly>
-                                    <div class="text-danger mt-1 d-none" id="y_invested_amount_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Total Invested Amount<span
+                                                class="funding_currency_label">()</span></label>
+                                        <input type="text" class="form-control" name="y_invested_amount"
+                                            value="{{ old('y_invested_amount', $entrepreneur->y_invested_amount) }}"
+                                            id="y_invested_amount" placeholder="Type your invested amount..." readonly>
+                                        <div class="text-danger mt-1 d-none" id="y_invested_amount_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div class="col-12 mb-3">
-                                <h6 class="mb-3" style="color: black; font-weight:bold;">
-                                    Financial Data of Last Three years<span class="funding_currency_label">()</span>
-                                </h6>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Revenue from Sales<span
-                                            class="funding_currency_label">()</span></label>
-                                    <input type="number" class="form-control" name="business_revenue1"
-                                        value="{{ old('business_revenue1', $entrepreneur->business_revenue1) }}"
-                                        min="0" step="0.01"
-                                        placeholder="Type your revenue from sales revenue...">
-                                    <div class="text-danger mt-1 d-none" id="business_revenue1_error"></div>
+                                <div class="col-12 mb-3">
+                                    <h6 class="mb-3" style="color: black; font-weight:bold;">
+                                        Financial Data of Last Three years<span class="funding_currency_label">()</span>
+                                    </h6>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Gross Profit<span
-                                            class="funding_currency_label">()</span></label>
-                                    <input type="number" class="form-control" name="business_revenue2"
-                                        value="{{ old('business_revenue2', $entrepreneur->business_revenue2) }}"
-                                        min="0" step="0.01" placeholder="Type your gross profit...">
-                                    <div class="text-danger mt-1 d-none" id="business_revenue2_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Revenue from Sales<span
+                                                class="funding_currency_label">()</span></label>
+                                        <input type="number" class="form-control" name="business_revenue1"
+                                            value="{{ old('business_revenue1', $entrepreneur->business_revenue1) }}"
+                                            min="0" step="0.01"
+                                            placeholder="Type your revenue from sales revenue...">
+                                        <div class="text-danger mt-1 d-none" id="business_revenue1_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Net Profit<span
-                                            class="funding_currency_label">()</span></label>
-                                    <input type="number" class="form-control" name="business_revenue3"
-                                        value="{{ old('business_revenue3', $entrepreneur->business_revenue3) }}"
-                                        min="0" step="0.01" placeholder="Type your net profit...">
-                                    <div class="text-danger mt-1 d-none" id="business_revenue3_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Gross Profit<span
+                                                class="funding_currency_label">()</span></label>
+                                        <input type="number" class="form-control" name="business_revenue2"
+                                            value="{{ old('business_revenue2', $entrepreneur->business_revenue2) }}"
+                                            min="0" step="0.01" placeholder="Type your gross profit...">
+                                        <div class="text-danger mt-1 d-none" id="business_revenue2_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    {{-- <label class="form-label" id="funding_label">Fund Required for Proposed Business Idea<span class="funding_currency_label">()</span></label> --}}
-                                    <label class="form-label">
-                                        <span id="funding_label_text">Fund Required for Current Business
-                                            Idea</span>
-                                        <span class="funding_currency_label">()</span>
-                                    </label>
-                                    <input type="number" class="form-control investment" name="y_market_capital"
-                                        id="y_market_capital" min="1" step="0.01"
-                                        value="{{ old('y_market_capital', $entrepreneur->y_market_capital) }}"
-                                        placeholder="Type your fund required for business idea...">
-                                    <div class="text-danger mt-1 d-none" id="y_market_capital_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Net Profit<span
+                                                class="funding_currency_label">()</span></label>
+                                        <input type="number" class="form-control" name="business_revenue3"
+                                            value="{{ old('business_revenue3', $entrepreneur->business_revenue3) }}"
+                                            min="0" step="0.01" placeholder="Type your net profit...">
+                                        <div class="text-danger mt-1 d-none" id="business_revenue3_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
-
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <label class="form-label">Equity Offered (Percentage)</label>
-                                    <input type="number" class="form-control equity" name="y_your_stake"
-                                        id="y_your_stake" placeholder="Type your equity offered (percentage)..."
-                                        min="1" max="100" step="0.01"
-                                        value="{{ old('y_your_stake', $entrepreneur->y_your_stake) }}">
-                                    <div class="text-danger mt-1 d-none" id="y_your_stake_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        {{-- <label class="form-label" id="funding_label">Fund Required for Proposed Business Idea<span class="funding_currency_label">()</span></label> --}}
+                                        <label class="form-label">
+                                            <span id="funding_label_text">Fund Required for Current Business
+                                                Idea</span>
+                                            <span class="funding_currency_label">()</span>
+                                        </label>
+                                        <input type="number" class="form-control investment" name="y_market_capital"
+                                            id="y_market_capital" min="1" step="0.01"
+                                            value="{{ old('y_market_capital', $entrepreneur->y_market_capital) }}"
+                                            placeholder="Type your fund required for business idea...">
+                                        <div class="text-danger mt-1 d-none" id="y_market_capital_error"></div>
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            {{-- <div class="col-md-4 mb-3">
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label class="form-label">Equity Offered (Percentage)</label>
+                                        <input type="number" class="form-control equity" name="y_your_stake"
+                                            id="y_your_stake" placeholder="Type your equity offered (percentage)..."
+                                            min="1" max="100" step="0.01"
+                                            value="{{ old('y_your_stake', $entrepreneur->y_your_stake) }}">
+                                        <div class="text-danger mt-1 d-none" id="y_your_stake_error"></div>
+                                    </div>
+                                </div>
+
+
+                                {{-- <div class="col-md-4 mb-3">
                                 <div class="form-floating-custom">
                                     <label class="form-label">Company Valuation<span
                                             class="funding_currency_label">()</span></label>
@@ -934,88 +941,89 @@
                                     <div class="text-danger mt-1 d-none" id="y_stake_funding_error"></div>
                                 </div>
                             </div> --}}
-                            <div class="col-md-4 mb-3">
-                                <div class="form-floating-custom">
-                                    <input type="number" class="form-control valuation" id="y_stake_funding"
-                                        name="y_stake_funding" readonly
-                                        value="{{ old('stake_funding', $entrepreneur->y_stake_funding) }}">
-                                    <label for="y_stake_funding">Company Valuation <span
-                                            class="funding_currency_label">()</span></label>
-                                    <div class="text-danger mt-1 d-none" id="y_stake_funding_error"></div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control valuation" id="y_stake_funding"
+                                            name="y_stake_funding" readonly
+                                            value="{{ old('stake_funding', $entrepreneur->y_stake_funding) }}">
+                                        <label for="y_stake_funding">Company Valuation <span
+                                                class="funding_currency_label">()</span></label>
+                                        <div class="text-danger mt-1 d-none" id="y_stake_funding_error"></div>
 
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-12 mb-3">
-                                {{-- <div class="form-floating-custom"> --}}
-                                <label for="y_pitch_deck" class="form-label">Upload Business Logo</label>
-                                <div class="file-upload-wrapper">
-                                    <input class="form-control" type="file" id="y_business_logo"
-                                        name="y_business_logo">
-                                    <label for="y_business_logo" class="file-upload-label w-100">
-                                        <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
-                                    </label>
+                                <div class="col-12 mb-3">
+                                    {{-- <div class="form-floating-custom"> --}}
+                                    <label for="y_pitch_deck" class="form-label">Upload Business Logo</label>
+                                    <div class="file-upload-wrapper">
+                                        <input class="form-control" type="file" id="y_business_logo"
+                                            name="y_business_logo">
+                                        <label for="y_business_logo" class="file-upload-label w-100">
+                                            <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
+                                        </label>
+                                    </div>
+                                    <div id="y_business_logo_preview" class="image-preview-container mt-2"></div>
+                                    <div class="text-danger mt-1 d-none" id="y_business_logo_error"></div>
+                                    {{-- </div> --}}
                                 </div>
-                                <div id="y_business_logo_preview" class="image-preview-container mt-2"></div>
-                                <div class="text-danger mt-1 d-none" id="y_business_logo_error"></div>
-                                {{-- </div> --}}
-                            </div>
 
 
-                            <div class="col-12 mb-3">
-                                <label for="y_product_photos" class="form-label">Upload Products
-                                    Photos</label>
-                                <div class="file-upload-wrapper">
-                                    <input class="form-control" type="file" id="y_product_photos"
-                                        name="y_product_photos[]" accept=".jpg,.jpeg,.png,.gif" multiple
-                                        style="display: block !important; visibility: visible !important; opacity: 1 !important;">
-                                    <label for="y_product_photos" class="file-upload-label w-100">
-                                        <i class="fas fa-upload me-2"></i>Choose Image files...(jpg,png,jpeg)
-                                    </label>
+                                <div class="col-12 mb-3">
+                                    <label for="y_product_photos" class="form-label">Upload Products
+                                        Photos</label>
+                                    <div class="file-upload-wrapper">
+                                        <input class="form-control" type="file" id="y_product_photos"
+                                            name="y_product_photos[]" accept=".jpg,.jpeg,.png,.gif" multiple
+                                            style="display: block !important; visibility: visible !important; opacity: 1 !important;">
+                                        <label for="y_product_photos" class="file-upload-label w-100">
+                                            <i class="fas fa-upload me-2"></i>Choose Image files...(jpg,png,jpeg)
+                                        </label>
+                                    </div>
+                                    <div id="y_product_photos_preview"
+                                        class="image-preview-container mt-2 d-flex flex-wrap gap-2"></div>
+                                    <div class="text-danger mt-1 d-none" id="y_product_photos_error"></div>
+                                    <small class="text-muted">Select 1-3 images (JPG, JPEG, PNG only, max 5MB
+                                        each)</small>
                                 </div>
-                                <div id="y_product_photos_preview"
-                                    class="image-preview-container mt-2 d-flex flex-wrap gap-2"></div>
-                                <div class="text-danger mt-1 d-none" id="y_product_photos_error"></div>
-                                <small class="text-muted">Select 1-3 images (JPG, JPEG, PNG only, max 5MB
-                                    each)</small>
-                            </div>
 
-                            <div class="col-12 mb-3">
-                                {{-- <div class="form-floating-custom"> --}}
-                                <label for="y_pitch_deck" class="form-label">Upload Business Summary</label>
-                                <div class="file-upload-wrapper">
-                                    <input class="form-control" type="file" id="y_pitch_deck" name="y_pitch_deck"
-                                        accept=".pdf">
-                                    <label for="y_pitch_deck" class="file-upload-label w-100">
-                                        <i class="fas fa-upload me-2"></i>Choose PDF file...(PDF, max 10MB)
-                                    </label>
+                                <div class="col-12 mb-3">
+                                    {{-- <div class="form-floating-custom"> --}}
+                                    <label for="y_pitch_deck" class="form-label">Upload Business Summary</label>
+                                    <div class="file-upload-wrapper">
+                                        <input class="form-control" type="file" id="y_pitch_deck" name="y_pitch_deck"
+                                            accept=".pdf">
+                                        <label for="y_pitch_deck" class="file-upload-label w-100">
+                                            <i class="fas fa-upload me-2"></i>Choose PDF file...(PDF, max 10MB)
+                                        </label>
+                                    </div>
+                                    <div id="y_pitch_deck_preview" class="pdf-preview-container mt-2"></div>
+                                    <div class="text-danger mt-1 d-none" id="y_pitch_deck_error"></div>
                                 </div>
-                                <div id="y_pitch_deck_preview" class="pdf-preview-container mt-2"></div>
-                                <div class="text-danger mt-1 d-none" id="y_pitch_deck_error"></div>
-                            </div>
 
 
-                            <div class="col-12 mb-3">
-                                <div class="form-floating-custom">
-                                    <label for="video_upload" class="form-label">Upload Pitch Video</label>
-                                    <input type="file" class="form-control" id="video_upload" name="video_upload"
-                                        accept="video/mp4,video/x-m4v,video/avi,video/webm">
-                                    <div class="text-danger mt-1 d-none" id="video_upload_error"></div>
-                                    <small class="text-muted">Upload one video file (MP4, AVI, or WebM, max 50MB)</small>
-                                    <input type="hidden" id="existing_video_url"
-                                        value="{{ $entrepreneur->video_upload ?? '' }}">
-                                    <div id="video_upload_preview" class="video-preview-container mt-2"></div>
+                                <div class="col-12 mb-3">
+                                    <div class="form-floating-custom">
+                                        <label for="video_upload" class="form-label">Upload Pitch Video</label>
+                                        <input type="file" class="form-control" id="video_upload" name="video_upload"
+                                            accept="video/mp4,video/x-m4v,video/avi,video/webm">
+                                        <div class="text-danger mt-1 d-none" id="video_upload_error"></div>
+                                        <small class="text-muted">Upload one video file (MP4, AVI, or WebM, max
+                                            50MB)</small>
+                                        <input type="hidden" id="existing_video_url"
+                                            value="{{ $entrepreneur->video_upload ?? '' }}">
+                                        <div id="video_upload_preview" class="video-preview-container mt-2"></div>
+                                    </div>
                                 </div>
+
                             </div>
+                        @endif
+                        {{-- end business yes --}}
 
-                        </div>
-                    @endif
-                    {{-- end business yes --}}
-
-                    <!-- Terms and Conditions -->
+                        <!-- Terms and Conditions -->
 
 
-                    {{-- <div class="d-flex flex-column flex-sm-row gap-3">
+                        {{-- <div class="d-flex flex-column flex-sm-row gap-3">
                         <a href="{{ route('choose.role', $user->id) }}" class="btn btn-outline-secondary flex-fill">
                             <i class="fas fa-arrow-left me-2"></i>Back
                         </a>
@@ -1025,42 +1033,42 @@
                         </button>
                     </div> --}}
 
-                    @if (!$isApproved)
-                        <div class="mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="agreed_to_terms"
-                                    id="agreed_to_terms" required>
-                                <label class="form-check-label" for="agreed_to_terms">
-                                    I agree to the <a href="#" class="text-primary">Terms and Conditions</a> and <a
-                                        href="#" class="text-primary">Privacy Policy</a> *
-                                </label>
-                                {{-- @error('agreed_to_terms')
+                        @if (!$isApproved || $isAdmin)
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="agreed_to_terms"
+                                        id="agreed_to_terms" required>
+                                    <label class="form-check-label" for="agreed_to_terms">
+                                        I agree to the <a href="#" class="text-primary">Terms and Conditions</a> and
+                                        <a href="#" class="text-primary">Privacy Policy</a> *
+                                    </label>
+                                    {{-- @error('agreed_to_terms')
                                     <div class="text-danger mt-1">{{ $message }}</div>
                                 @enderror --}}
+                                </div>
                             </div>
-                        </div>
-                        <div class="d-flex flex-column flex-sm-row gap-3">
-                            {{-- <a href="{{ route('choose.role', $user->id) }}" class="btn btn-outline-secondary flex-fill">
+                            <div class="d-flex flex-column flex-sm-row gap-3">
+                                {{-- <a href="{{ route('choose.role', $user->id) }}" class="btn btn-outline-secondary flex-fill">
                                 <i class="fas fa-arrow-left me-2"></i>Back
                             </a> --}}
-                            <button type="submit" class="btn btn flex-fill"
-                                style="background-color: #2EA9B9; color: white;">
-                                <i class="fas fa-check me-2"></i>Update Profile
-                            </button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="text-center mt-4">
-                            <p class="text-muted">
-                                <i class="fas fa-info-circle me-2"></i>
-                                Profile is approved and cannot be edited.
-                            </p>
-                        </div>
-                    @endif
+                                <button type="submit" class="btn btn flex-fill"
+                                    style="background-color: #2EA9B9; color: white;">
+                                    <i class="fas fa-check me-2"></i>Update Profile
+                                </button>
                     </form>
                 </div>
+            @else
+                <div class="text-center mt-4">
+                    <p class="text-muted">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Profile is approved and cannot be edited.
+                    </p>
+                </div>
+                @endif
+                </form>
             </div>
         </div>
+    </div>
     </div>
 @endsection
 @section('scripts')

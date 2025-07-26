@@ -9,26 +9,23 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class NewUserRegisteredMail extends Mailable
+class IncompleteProfileReminderMail extends Mailable
 {
     use Queueable, SerializesModels;
-
     public $name;
-    public $email;
     public $role;
-    public $password;
+    public $email;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($name, $email, $role, $password)
+    public function __construct($name, $role, $email)
     {
         $this->name = $name;
-        $this->email = $email;
         $this->role = $role;
-        $this->password = $password;
+        $this->email = $email;
     }
 
     /**
@@ -39,7 +36,7 @@ class NewUserRegisteredMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'New User Registration Notification',
+            subject: 'Please complete your profile on Future Taikun',
         );
     }
 
@@ -51,12 +48,11 @@ class NewUserRegisteredMail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.new_user_registered',
+            view: 'emails.incomplete_profile_reminder',
             with: [
                 'name' => $this->name,
-                'email' => $this->email,
                 'role' => $this->role,
-                'password' => $this->password,
+                'email' => $this->email,
             ],
         );
     }
