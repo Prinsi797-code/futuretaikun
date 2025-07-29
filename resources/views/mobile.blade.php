@@ -625,6 +625,39 @@
                         $interestedInvestorsCount > 0 && $highestRemark->max_value
                             ? formatNumber($highestRemark->max_value)
                             : $stakeFundingFormatted;
+
+                    // FIXED: Days Left Color Logic
+                    $createdAt = \Carbon\Carbon::parse($entrepreneur->created_at);
+                    $daysSinceCreated = now()->diffInDays($createdAt);
+                    $daysLeft = max(0, 90 - $daysSinceCreated);
+                    $progressPercentage = ($daysLeft / 90) * 100;
+
+                    // Color logic based on days left (NOT investor count)
+                    if ($daysLeft <= 9) {
+                        $daysColor = '#e74c3c'; // Red - Urgent
+                        $progressBg = 'linear-gradient(90deg, #e74c3c 0%, #c0392b 100%)';
+                        $oldprogressBg = 'linear-gradient(90deg, #f6867aff 0%, #fa8376ff 100%)';
+                    } elseif ($daysLeft <= 70) {
+                        $daysColor = '#f39c12'; // Orange - Warning
+                        $progressBg = 'linear-gradient(90deg, #f39c12 0%, #e67e22 100%)';
+                        $oldprogressBg = 'linear-gradient(90deg, #f9c97dff 0%, #f9c97dff 100%)';
+                    } else {
+                        $daysColor = '#27ae60'; // Green - Safe
+                        $progressBg = 'linear-gradient(90deg, #27ae60 0%, #229954 100%)';
+                        $oldprogressBg = 'linear-gradient(90deg, #53d087ff 0%, #53d087ff 100%)';
+                    }
+
+                    // Investor progress bar color logic (separate from days)
+                    if ($interestedInvestorsCount <= 2) {
+                        $investorColor = '#e74c3c';
+                        $investorBg = 'linear-gradient(to right, #e74c3c, #c0392b)';
+                    } elseif ($interestedInvestorsCount <= 5) {
+                        $investorColor = '#f39c12';
+                        $investorBg = 'linear-gradient(to right, #f39c12, #e67e22)';
+                    } else {
+                        $investorColor = '#27ae60';
+                        $investorBg = 'linear-gradient(to right, #27ae60, #229954)';
+                    }
                 @endphp
 
                 <div class="col">
@@ -679,6 +712,7 @@
                                 @endif
                             </div>
                         </div>
+
                         <hr class="m-0">
 
                         <div class="d-flex justify-content-between w-100 mt-3 px-2 mb-3"
@@ -709,12 +743,24 @@
                                     <div>
                                         <div class="fw-bold text-muted">Interested Investors</div>
                                         <div class="d-flex align-items-center gap-2 justify-content-center">
-                                            <span class="range-indicator"
-                                                style="display: inline-block; width: 200px; height: 10px; border-radius: 5px; background: linear-gradient(to right, 
-                                        {{ $interestedInvestorsCount <= 2 ? '#ff0000' : ($interestedInvestorsCount <= 5 ? '#ffa500' : '#00ff00') }},
-                                        {{ $interestedInvestorsCount <= 2 ? '#ff3333' : ($interestedInvestorsCount <= 5 ? '#ffcc00' : '#33ff33') }});
-                                        transition: all 0.3s ease;">
-                                            </span>
+                                            <div
+                                                style="
+                                    width: 250px; 
+                                    height: 10px; 
+                                    background: {{ $oldprogressBg }} !important; 
+                                    border-radius: 3px;
+                                    overflow: hidden;
+                                ">
+                                                <div
+                                                    style="
+                                        width: {{ $progressPercentage }}%; 
+                                        height: 100%; 
+                                        background: {{ $progressBg }};
+                                        border-radius: 3px;
+                                        transition: width 0.5s ease;
+                                    ">
+                                                </div>
+                                            </div>
                                             {{ $interestedInvestorsCount }}
                                         </div>
                                     </div>

@@ -89,6 +89,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/admin/update-investor-photo-logo', [InvestorController::class, 'updatePhotosLogo'])->name('admin.update.photo.logo');
     Route::post('/entrepreneur/send-reminder', [EntrepreneurController::class, 'sendReminderEmail'])
         ->name('entrepreneur.send.reminder');
+
+    Route::post('/investor/send-reminder', [InvestorController::class, 'sendReminderEmail'])
+        ->name('investor.send.reminder');
+
+
     Route::post('/investor/send-reminder', [InvestorController::class, 'sendReminderEmail'])
         ->name('investor.send.reminder');
 
@@ -100,6 +105,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     Route::get('/admin/entrepreneur/edit/{id}', [EntrepreneurController::class, 'adminEdit'])->name('admin.entrepreneur.edit');
     Route::post('/admin/entrepreneur/update/{id}', [EntrepreneurController::class, 'adminUpdate'])->name('admin.entrepreneur.update');
+
+    Route::get('/admin/investor/edit/{id}', [InvestorController::class, 'adminEdit'])->name('admin.investor.edit');
+    Route::post('/admin/investor/update/{id}', [InvestorController::class, 'adminUpdate'])->name('admin.investor.update');
+
+
     // Route::post('/logout', function () {
     //     Auth::logout();
     //     return redirect('/login');
