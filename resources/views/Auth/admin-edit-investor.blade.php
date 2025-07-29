@@ -271,578 +271,561 @@
                             <i class="fas fa-lightbulb text-primary" style="font-size: 48px;"></i>
                         </div>
                     </div>
-                    @if (!$isApproved)
-                        {{-- <form action="{{ route('investor.update', $investor->id) }}" method="POST"
+                    {{-- <form action="{{ route('investor.update', $investor->id) }}" method="POST"
                             enctype="multipart/form-data"> --}}
-                        <form
-                            action="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.investor.update', $investor->id) : route('investor.update') }}"
-                            method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $investor->id }}">
+                    <form
+                        action="{{ Auth::check() && Auth::user()->role === 'admin' ? route('admin.investor.update', $investor->id) : route('investor.update') }}"
+                        method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $investor->id }}">
 
-                            <!-- Existing Company Toggle -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3 text-center">
-                                        <i class="fas fa-building me-2"></i>Do You Have an Existing Company?
-                                    </h5>
-                                    <div class="d-flex gap-3 mt-2 justify-content-center">
-                                        <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input" name="existing_company"
-                                                value="0" id="existing_company_no"
-                                                {{ old('existing_company', $investor->existing_company ?? '0') == '0' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="existing_company_no">No</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input type="radio" class="form-check-input" name="existing_company"
-                                                value="1" id="existing_company_yes"
-                                                {{ old('existing_company', $investor->existing_company ?? '0') == '1' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="existing_company_yes">Yes</label>
-                                        </div>
+                        <!-- Existing Company Toggle -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3 text-center">
+                                    <i class="fas fa-building me-2"></i>Do You Have an Existing Company?
+                                </h5>
+                                <div class="d-flex gap-3 mt-2 justify-content-center">
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" class="form-check-input" name="existing_company"
+                                            value="0" id="existing_company_no"
+                                            {{ old('existing_company', $investor->existing_company ?? '0') == '0' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="existing_company_no">No</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" class="form-check-input" name="existing_company"
+                                            value="1" id="existing_company_yes"
+                                            {{ old('existing_company', $investor->existing_company ?? '0') == '1' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="existing_company_yes">Yes</label>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Personal Information -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3">
-                                        <i class="fas fa-user me-2"></i>Personal Information
-                                    </h5>
+                        <!-- Personal Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="full_name" id="full_name"
+                                        placeholder="Type your name..." value="{{ old('full_name', $investor->full_name) }}"
+                                        readonly>
+                                    <label for="full_name">Full Name *</label>
+                                    <div class="text-danger mt-1 d-none" id="full_name_error"></div>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="email" class="form-control" name="email"
+                                        value="{{ old('email', $investor->email) }}" readonly>
+                                    <label for="email">Email Address *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <select name="country_code" class="form-select" style="max-width: 120px;" readonly
+                                        disabled>
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country['code'] }}"
+                                                {{ old('country_code', $investor->country_code) == $country['code'] ? 'selected' : '' }}>
+                                                {{ $country['name'] }} ({{ $country['code'] }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="tel" class="form-control" name="phone_number"
+                                        placeholder="Enter mobile number" readonly
+                                        value="{{ old('phone_number', $investor->phone_number) }}" maxlength="12"
+                                        style="padding: 15px;">
+                                </div>
+                                <div class="text-danger mt-1 d-none" id="phone_number_error"></div>
+                                <div class="text-danger mt-1 d-none" id="country_code_error"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="country" id="country"
+                                        value="{{ old('country', $investor->country) }}" readonly>
+                                    <label for="country">Country *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="state" id="state"
+                                        value="{{ old('state', $investor->state) }}" readonly>
+                                    <label for="state">State *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="city" id="city"
+                                        value="{{ old('city', $investor->city) }}" readonly>
+                                    <label for="city">City *</label>
+                                    <div class="text-danger mt-1 d-none" id="city_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" pattern="[0-9]{6}" inputmode="numeric" maxlength="6"
+                                        class="form-control" name="pin_code"
+                                        value="{{ old('pin_code', $investor->pin_code) }}"
+                                        placeholder="Type your pin/zip code...">
+                                    <label for="pin_code">Pin/Zip Code *</label>
+                                    <div class="text-danger mt-1 d-none" id="pin_code_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="dob" id="dob"
+                                        value="{{ old('dob', $investor->dob) }}">
+                                    <label for="dob">Date of Birth *</label>
+                                    <div class="text-danger mt-1 d-none" id="dob_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
                                     <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="full_name" id="full_name"
-                                            placeholder="Type your name..."
-                                            value="{{ old('full_name', $investor->full_name) }}" readonly>
-                                        <label for="full_name">Full Name *</label>
-                                        <div class="text-danger mt-1 d-none" id="full_name_error"></div>
+                                        <select class="form-select" name="qualification" id="qualification">
+                                            <option value="">Select Qualification</option>
+                                            @foreach ($qualifications as $qualification)
+                                                <option value="{{ $qualification }}"
+                                                    {{ old('qualification', $investor->qualification) == $qualification ? 'selected' : '' }}>
+                                                    {{ $qualification }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <label for="qualification">Select Qualification *</label>
+                                    </div>
+                                    <div class="text-danger mt-1 d-none" id="qualification_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="age" id="age"
+                                        placeholder="Type your age..." readonly value="{{ old('age', $investor->age) }}">
+                                    <label for="age">Age</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="current_address"
+                                        id="current_address"
+                                        value="{{ old('current_address', $investor->current_address) }}"
+                                        placeholder="Type your current address...">
+                                    <label for="current_address">Current Address</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="photo" class="form-label">Upload Photo</label>
+                                <div class="file-upload-wrapper">
+                                    <input class="form-control" type="file" id="photo" name="photo"
+                                        accept=".jpg,.jpeg,.png">
+                                    <label for="photo" class="file-upload-label w-100">
+                                        <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
+                                    </label>
+                                </div>
+                                <div id="photo_preview" class="image-preview-container mt-2">
+                                    @if ($investor->photo)
+                                        <img src="{{ Storage::url($investor->photo) }}" class="img-thumbnail"
+                                            style="max-width: 150px; max-height: 150px; object-fit: cover; margin: 5px;">
+                                    @endif
+                                </div>
+                                <div class="text-danger mt-1 d-none" id="photo_error"></div>
+                            </div>
+                        </div>
+
+                        <!-- Investor Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-briefcase me-2"></i>Investor Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="url" class="form-control" name="linkedin_profile"
+                                        id="linkedin_profile"
+                                        value="{{ old('linkedin_profile', $investor->linkedin_profile) }}"
+                                        placeholder="https://linkedin.com/in/your-profile">
+                                    <label for="linkedin_profile">LinkedIn Profile</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <select class="form-select" name="investor_type" id="investor_type">
+                                        <option value="">Select Investor</option>
+                                        @foreach ($investorTypes as $type)
+                                            <option value="{{ $type }}"
+                                                {{ old('investor_type', $investor->investor_type ?? '') == $type ? 'selected' : '' }}>
+                                                {{ $type }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <label for="investor_type">Select Investor Type *</label>
+                                    <div class="text-danger mt-1 d-none" id="investor_type_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <select class="form-select" name="investment_range" id="investment_range">
+                                        <option value="">Select Investment Range</option>
+                                        @foreach ($investmentRanges as $range)
+                                            <option value="{{ $range }}"
+                                                {{ old('investment_range', $investor->investment_range ?? '') == $range ? 'selected' : '' }}>
+                                                {{ $range }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <label for="investment_range">Investment Range *<span
+                                            class="funding_currency_label">()</span></label>
+                                    <div class="text-danger mt-1 d-none" id="investment_range_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <div class="form-floating-custom">
+                                        <select class="form-select" name="preferred_industries[]"
+                                            id="preferred_industries" multiple>
+                                            @foreach ($industries as $industry)
+                                                <option value="{{ $industry }}"
+                                                    {{ in_array($industry, old('preferred_industries', json_decode($investor->preferred_industries, true) ?? [])) ? 'selected' : '' }}>
+                                                    {{ $industry }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <label for="preferred_industries">Preferred Industries</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
                                     <div class="form-floating-custom">
-                                        <input type="email" class="form-control" name="email"
-                                            value="{{ old('email', $investor->email) }}" readonly>
-                                        <label for="email">Email Address *</label>
+                                        <select class="form-select" name="preferred_geographies[]"
+                                            id="preferred_geographies" multiple>
+                                            @foreach ($geographies as $geography)
+                                                <option value="{{ $geography }}"
+                                                    {{ in_array($geography, old('preferred_geographies', json_decode($investor->preferred_geographies, true) ?? [])) ? 'selected' : '' }}>
+                                                    {{ $geography }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <label for="preferred_geographies">Preferred Geographies</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-custom">
+                                    <label class="form-label" for="preferred_startup_stage">Preferred Investment Stage
+                                        *</label>
+                                    <select class="form-select" name="preferred_startup_stage[]"
+                                        id="preferred_startup_stage" multiple>
+                                        <option value="">Select Stages</option>
+                                        @foreach ($startupStages as $stage)
+                                            <option value="{{ $stage }}"
+                                                {{ in_array($stage, old('preferred_startup_stage', $investor ? ($investor->preferred_startup_stage ? json_decode($investor->preferred_startup_stage, true) : []) : [])) ? 'selected' : '' }}>
+                                                {{ $stage }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="text-danger mt-1 d-none" id="preferred_startup_stage_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <div class="form-floating-custom">
+                                        <select class="form-select" name="investment_experince"
+                                            id="investment_experince">
+                                            <option value="">Select Investment Experience</option>
+                                            @foreach ($investmentExperince as $experience)
+                                                <option value="{{ $experience }}"
+                                                    {{ old('investment_experince', $investor->investment_experince) == $experience ? 'selected' : '' }}>
+                                                    {{ $experience }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <label for="investment_experince">Investment Experience</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Company Information -->
+                        <div class="row mb-4 company-information"
+                            style="display: {{ old('existing_company', $investor->existing_company ?? '0') == '1' ? 'block' : 'none' }};">
+                            <div class="col-12">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-building me-2"></i>Company Information
+                                </h5>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
                                     <div class="input-group">
-                                        <select name="country_code" class="form-select" style="max-width: 120px;" readonly
-                                            disabled>
+                                        <select name="company_country_code" class="form-select"
+                                            style="max-width: 120px;">
                                             @foreach ($countries as $country)
                                                 <option value="{{ $country['code'] }}"
-                                                    {{ old('country_code', $investor->country_code) == $country['code'] ? 'selected' : '' }}>
+                                                    {{ old('company_country_code', $investor->company_country_code ?? '+91') == $country['code'] ? 'selected' : '' }}>
                                                     {{ $country['name'] }} ({{ $country['code'] }})
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <input type="tel" class="form-control" name="phone_number"
-                                            placeholder="Enter mobile number" readonly
-                                            value="{{ old('phone_number', $investor->phone_number) }}" maxlength="12"
-                                            style="padding: 15px;">
+                                        <input type="tel" class="form-control" name="professional_phone"
+                                            placeholder="9638527410"
+                                            value="{{ old('professional_phone', $investor->professional_phone ?? '') }}"
+                                            maxlength="12">
                                     </div>
-                                    <div class="text-danger mt-1 d-none" id="phone_number_error"></div>
-                                    <div class="text-danger mt-1 d-none" id="country_code_error"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="country" id="country"
-                                            value="{{ old('country', $investor->country) }}" readonly>
-                                        <label for="country">Country *</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="state" id="state"
-                                            value="{{ old('state', $investor->state) }}" readonly>
-                                        <label for="state">State *</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="city" id="city"
-                                            value="{{ old('city', $investor->city) }}" readonly>
-                                        <label for="city">City *</label>
-                                        <div class="text-danger mt-1 d-none" id="city_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" pattern="[0-9]{6}" inputmode="numeric" maxlength="6"
-                                            class="form-control" name="pin_code"
-                                            value="{{ old('pin_code', $investor->pin_code) }}"
-                                            placeholder="Type your pin/zip code...">
-                                        <label for="pin_code">Pin/Zip Code *</label>
-                                        <div class="text-danger mt-1 d-none" id="pin_code_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="dob" id="dob"
-                                            value="{{ old('dob', $investor->dob) }}">
-                                        <label for="dob">Date of Birth *</label>
-                                        <div class="text-danger mt-1 d-none" id="dob_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-group">
-                                        <div class="form-floating-custom">
-                                            <select class="form-select" name="qualification" id="qualification">
-                                                <option value="">Select Qualification</option>
-                                                @foreach ($qualifications as $qualification)
-                                                    <option value="{{ $qualification }}"
-                                                        {{ old('qualification', $investor->qualification) == $qualification ? 'selected' : '' }}>
-                                                        {{ $qualification }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="qualification">Select Qualification *</label>
-                                        </div>
-                                        <div class="text-danger mt-1 d-none" id="qualification_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="age" id="age"
-                                            placeholder="Type your age..." readonly
-                                            value="{{ old('age', $investor->age) }}">
-                                        <label for="age">Age</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="current_address"
-                                            id="current_address"
-                                            value="{{ old('current_address', $investor->current_address) }}"
-                                            placeholder="Type your current address...">
-                                        <label for="current_address">Current Address</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="photo" class="form-label">Upload Photo</label>
-                                    <div class="file-upload-wrapper">
-                                        <input class="form-control" type="file" id="photo" name="photo"
-                                            accept=".jpg,.jpeg,.png">
-                                        <label for="photo" class="file-upload-label w-100">
-                                            <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
-                                        </label>
-                                    </div>
-                                    <div id="photo_preview" class="image-preview-container mt-2">
-                                        @if ($investor->photo)
-                                            <img src="{{ Storage::url($investor->photo) }}" class="img-thumbnail"
-                                                style="max-width: 150px; max-height: 150px; object-fit: cover; margin: 5px;">
-                                        @endif
-                                    </div>
-                                    <div class="text-danger mt-1 d-none" id="photo_error"></div>
+                                    <div class="text-danger mt-1 d-none" id="professional_phone_error"></div>
+                                    <div class="text-danger mt-1 d-none" id="company_country_code_error"></div>
                                 </div>
                             </div>
-
-                            <!-- Investor Information -->
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <h5 class="mb-3">
-                                        <i class="fas fa-briefcase me-2"></i>Investor Information
-                                    </h5>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="email" class="form-control" name="professional_email"
+                                        id="professional_email"
+                                        value="{{ old('professional_email', $investor->professional_email) }}"
+                                        placeholder="Enter professional email">
+                                    <label for="professional_email">Professional Email</label>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="url" class="form-control" name="linkedin_profile"
-                                            id="linkedin_profile"
-                                            value="{{ old('linkedin_profile', $investor->linkedin_profile) }}"
-                                            placeholder="https://linkedin.com/in/your-profile">
-                                        <label for="linkedin_profile">LinkedIn Profile</label>
-                                    </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="url" class="form-control" name="website" id="website"
+                                        value="{{ old('website', $investor->website) }}"
+                                        placeholder="https://your-website.com">
+                                    <label for="website">Website</label>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-group">
                                     <div class="form-floating-custom">
-                                        <select class="form-select" name="investor_type" id="investor_type">
-                                            <option value="">Select Investor</option>
-                                            @foreach ($investorTypes as $type)
-                                                <option value="{{ $type }}"
-                                                    {{ old('investor_type', $investor->investor_type ?? '') == $type ? 'selected' : '' }}>
-                                                    {{ $type }}
+                                        <select class="form-select" name="designation" id="designation">
+                                            <option value="">Select Designation</option>
+                                            @foreach ($designations as $designation)
+                                                <option value="{{ $designation }}"
+                                                    {{ old('designation', $investor->designation) == $designation ? 'selected' : '' }}>
+                                                    {{ $designation }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <label for="investor_type">Select Investor Type *</label>
-                                        <div class="text-danger mt-1 d-none" id="investor_type_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <select class="form-select" name="investment_range" id="investment_range">
-                                            <option value="">Select Investment Range</option>
-                                            @foreach ($investmentRanges as $range)
-                                                <option value="{{ $range }}"
-                                                    {{ old('investment_range', $investor->investment_range ?? '') == $range ? 'selected' : '' }}>
-                                                    {{ $range }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <label for="investment_range">Investment Range *<span
-                                                class="funding_currency_label">()</span></label>
-                                        <div class="text-danger mt-1 d-none" id="investment_range_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-group">
-                                        <div class="form-floating-custom">
-                                            <select class="form-select" name="preferred_industries[]"
-                                                id="preferred_industries" multiple>
-                                                @foreach ($industries as $industry)
-                                                    <option value="{{ $industry }}"
-                                                        {{ in_array($industry, old('preferred_industries', json_decode($investor->preferred_industries, true) ?? [])) ? 'selected' : '' }}>
-                                                        {{ $industry }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="preferred_industries">Preferred Industries</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-group">
-                                        <div class="form-floating-custom">
-                                            <select class="form-select" name="preferred_geographies[]"
-                                                id="preferred_geographies" multiple>
-                                                @foreach ($geographies as $geography)
-                                                    <option value="{{ $geography }}"
-                                                        {{ in_array($geography, old('preferred_geographies', json_decode($investor->preferred_geographies, true) ?? [])) ? 'selected' : '' }}>
-                                                        {{ $geography }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="preferred_geographies">Preferred Geographies</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-floating-custom">
-                                        <label class="form-label" for="preferred_startup_stage">Preferred Investment Stage
-                                            *</label>
-                                        <select class="form-select" name="preferred_startup_stage[]"
-                                            id="preferred_startup_stage" multiple>
-                                            <option value="">Select Stages</option>
-                                            @foreach ($startupStages as $stage)
-                                                <option value="{{ $stage }}"
-                                                    {{ in_array($stage, old('preferred_startup_stage', $investor ? ($investor->preferred_startup_stage ? json_decode($investor->preferred_startup_stage, true) : []) : [])) ? 'selected' : '' }}>
-                                                    {{ $stage }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="text-danger mt-1 d-none" id="preferred_startup_stage_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="form-group">
-                                        <div class="form-floating-custom">
-                                            <select class="form-select" name="investment_experince"
-                                                id="investment_experince">
-                                                <option value="">Select Investment Experience</option>
-                                                @foreach ($investmentExperince as $experience)
-                                                    <option value="{{ $experience }}"
-                                                        {{ old('investment_experince', $investor->investment_experince) == $experience ? 'selected' : '' }}>
-                                                        {{ $experience }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="investment_experince">Investment Experience</label>
-                                        </div>
+                                        <label for="designation">Designation</label>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Company Information -->
-                            <div class="row mb-4 company-information"
-                                style="display: {{ old('existing_company', $investor->existing_company ?? '0') == '1' ? 'block' : 'none' }};">
-                                <div class="col-12">
-                                    <h5 class="mb-3">
-                                        <i class="fas fa-building me-2"></i>Company Information
-                                    </h5>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <div class="input-group">
-                                            <select name="company_country_code" class="form-select"
-                                                style="max-width: 120px;">
-                                                @foreach ($countries as $country)
-                                                    <option value="{{ $country['code'] }}"
-                                                        {{ old('company_country_code', $investor->company_country_code ?? '+91') == $country['code'] ? 'selected' : '' }}>
-                                                        {{ $country['name'] }} ({{ $country['code'] }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <input type="tel" class="form-control" name="professional_phone"
-                                                placeholder="9638527410"
-                                                value="{{ old('professional_phone', $investor->professional_phone ?? '') }}"
-                                                maxlength="12">
-                                        </div>
-                                        <div class="text-danger mt-1 d-none" id="professional_phone_error"></div>
-                                        <div class="text-danger mt-1 d-none" id="company_country_code_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="email" class="form-control" name="professional_email"
-                                            id="professional_email"
-                                            value="{{ old('professional_email', $investor->professional_email) }}"
-                                            placeholder="Enter professional email">
-                                        <label for="professional_email">Professional Email</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="url" class="form-control" name="website" id="website"
-                                            value="{{ old('website', $investor->website) }}"
-                                            placeholder="https://your-website.com">
-                                        <label for="website">Website</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-group">
-                                        <div class="form-floating-custom">
-                                            <select class="form-select" name="designation" id="designation">
-                                                <option value="">Select Designation</option>
-                                                @foreach ($designations as $designation)
-                                                    <option value="{{ $designation }}"
-                                                        {{ old('designation', $investor->designation) == $designation ? 'selected' : '' }}>
-                                                        {{ $designation }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="designation">Designation</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="organization_name"
-                                            id="organization_name"
-                                            value="{{ old('organization_name', $investor->organization_name) }}"
-                                            placeholder="Enter organization name">
-                                        <label for="organization_name">Organization Name</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="company_address"
-                                            id="company_address"
-                                            value="{{ old('company_address', $investor->company_address) }}"
-                                            placeholder="Enter company address">
-                                        <label for="company_address">Company Address</label>
-                                    </div>
-                                </div>
-                                {{-- <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <select name="company_country" class="form-select" id="company_country">
-                                            <option value="">Select a country</option>
-                                            @foreach ($countries as $country)
-                                                <option value="{{ $country['name'] }}"
-                                                    {{ old('company_country', $investor->company_country ?? $autoDetectedCountry) == $country['name'] ? 'selected' : '' }}>
-                                                    {{ $country['name'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <label for="company_country">Business Country *</label>
-                                        <div class="text-danger mt-1 d-none" id="company_country_error"></div>
-                                    </div>
-                                </div> --}}
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <select name="company_country" class="form-select" id="company_country">
-                                            <option value="">Select a country</option>
-                                            @foreach ($countries1 as $country)
-                                                <option value="{{ $country['iso2'] }}"
-                                                    {{ old('company_country', $investor->company_country ?? $autoDetectedCountry) == $country['iso2'] ? 'selected' : '' }}>
-                                                    {{ $country['name'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <label for="company_country">Business Country *</label>
-                                        <div class="text-danger mt-1 d-none" id="company_country_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <select class="form-control" name="company_state" id="company_state">
-                                            <option value="">Select State</option>
-                                        </select>
-                                        <label for="company_state">Business State *</label>
-                                        <div class="text-danger mt-1 d-none" id="company_state_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <select class="form-control" name="company_city" id="company_city">
-                                            <option value="">Select City</option>
-                                        </select>
-                                        <label for="company_city">Business City *</label>
-                                        <div class="text-danger mt-1 d-none" id="company_city_error"></div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="company_zipcode"
-                                            id="company_zipcode"
-                                            value="{{ old('company_zipcode', $investor->company_zipcode) }}"
-                                            placeholder="Enter company zipcode">
-                                        <label for="company_zipcode">Company Zipcode</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <div class="form-floating-custom">
-                                        <input type="text" class="form-control" name="tax_registration_number"
-                                            id="tax_registration_number"
-                                            value="{{ old('tax_registration_number', $investor->tax_registration_number) }}"
-                                            placeholder="Enter tax registration number">
-                                        <label for="tax_registration_number">Tax Registration Number</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <label for="business_logo" class="form-label">Upload Business Logo</label>
-                                    <div class="file-upload-wrapper">
-                                        <input class="form-control" type="file" id="business_logo"
-                                            name="business_logo" accept=".jpg,.jpeg,.png">
-                                        <label for="business_logo" class="file-upload-label w-100">
-                                            <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
-                                        </label>
-                                    </div>
-                                    <div id="business_logo_preview" class="image-preview-container mt-2">
-                                        @if ($investor->business_logo)
-                                            <img src="{{ Storage::url($investor->business_logo) }}" class="img-thumbnail"
-                                                style="max-width: 150px; max-height: 150px; object-fit: cover; margin: 5px;">
-                                        @endif
-                                    </div>
-                                    <div class="text-danger mt-1 d-none" id="business_logo_error"></div>
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <label for="investor_profile" class="form-label">Upload Investor Profile</label>
-                                    <div class="file-upload-wrapper">
-                                        <input class="form-control" type="file" id="investor_profile"
-                                            name="investor_profile" accept=".pdf">
-                                        <label for="investor_profile" class="file-upload-label w-100">
-                                            <i class="fas fa-upload me-2"></i>Choose PDF file...(PDF, max 10MB)
-                                        </label>
-                                    </div>
-                                    <div id="investor_profile_preview" class="pdf-preview-container mt-2">
-                                        @if ($investor->investor_profile)
-                                            <div class="d-flex align-items-center p-2 border rounded mb-2">
-                                                <i class="fas fa-file-pdf text-danger me-2"></i>
-                                                <div>
-                                                    <div class="fw-bold">
-                                                        <a href="{{ Storage::url($investor->investor_profile) }}"
-                                                            target="_blank">
-                                                            {{ basename($investor->investor_profile) }}
-                                                        </a>
-                                                    </div>
-                                                    <small class="text-muted">PDF</small>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="text-danger mt-1 d-none" id="investor_profile_error"></div>
-                                    @error('investor_profile')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="organization_name"
+                                        id="organization_name"
+                                        value="{{ old('organization_name', $investor->organization_name) }}"
+                                        placeholder="Enter organization name">
+                                    <label for="organization_name">Organization Name</label>
                                 </div>
                             </div>
-
-                            <!-- Investment Companies -->
-                            <div class="row mb-4 company-information"
-                                style="display: {{ old('existing_company', $investor->existing_company ?? '0') == '1' ? 'block' : 'none' }};">
-                                <div class="col-12">
-                                    <h5 class="mb-3">
-                                        <i class="fas fa-building me-2"></i>Investment Companies
-                                    </h5>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="company_address"
+                                        id="company_address"
+                                        value="{{ old('company_address', $investor->company_address) }}"
+                                        placeholder="Enter company address">
+                                    <label for="company_address">Company Address</label>
                                 </div>
-                                @foreach ($investor->companies ?? [] as $index => $company)
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-floating-custom">
-                                            <input type="text" class="form-control"
-                                                name="company_name[{{ $index }}]"
-                                                value="{{ old('company_name.' . $index, $company->company_name) }}"
-                                                placeholder="Enter company name">
-                                            <label for="company_name[{{ $index }}]">Company Name</label>
-                                            @error('company_name.' . $index)
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-floating-custom">
-                                            <input type="number" class="form-control"
-                                                name="market_capital[{{ $index }}]"
-                                                value="{{ old('market_capital.' . $index, $company->market_capital) }}"
-                                                placeholder="Enter market capital">
-                                            <label for="market_capital[{{ $index }}]">Market Capital <span
-                                                    class="funding_currency_label">()</span></label>
-                                            @error('market_capital.' . $index)
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-floating-custom">
-                                            <input type="number" class="form-control"
-                                                name="your_stake[{{ $index }}]"
-                                                value="{{ old('your_stake.' . $index, $company->your_stake) }}"
-                                                placeholder="Enter your stake (%)" min="0" max="100"
-                                                step="0.01">
-                                            <label for="your_stake[{{ $index }}]">Your Stake (%)</label>
-                                            @error('your_stake.' . $index)
-                                                <div class="text-danger mt-1">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <div class="form-floating-custom">
-                                            <input type="number" class="form-control"
-                                                name="stake_funding[{{ $index }}]"
-                                                value="{{ old('stake_funding.' . $index, $company->stake_funding) }}"
-                                                placeholder="Enter stake funding">
-                                            <label for="stake_funding[{{ $index }}]."Stake Funding><span
-                                                    class="funding_currency_label">funding_currency_label">()</span></label>
-                                            @error('stake_funding.' . $index)
-                                                <div class="text-danger mt-1">{{ $message }}</div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <select name="company_country" class="form-select" id="company_country">
+                                        <option value="">Select a country</option>
+                                        @foreach ($countries1 as $country)
+                                            <option value="{{ $country['iso2'] }}"
+                                                {{ old('company_country', $investor->company_country ?? $autoDetectedCountry) == $country['iso2'] ? 'selected' : '' }}>
+                                                {{ $country['name'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <label for="company_country">Business Country *</label>
+                                    <div class="text-danger mt-1 d-none" id="company_country_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <select class="form-control" name="company_state" id="company_state">
+                                        <option value="">Select State</option>
+                                    </select>
+                                    <label for="company_state">Business State *</label>
+                                    <div class="text-danger mt-1 d-none" id="company_state_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <select class="form-control" name="company_city" id="company_city">
+                                        <option value="">Select City</option>
+                                    </select>
+                                    <label for="company_city">Business City *</label>
+                                    <div class="text-danger mt-1 d-none" id="company_city_error"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="company_zipcode"
+                                        id="company_zipcode"
+                                        value="{{ old('company_zipcode', $investor->company_zipcode) }}"
+                                        placeholder="Enter company zipcode">
+                                    <label for="company_zipcode">Company Zipcode</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating-custom">
+                                    <input type="text" class="form-control" name="tax_registration_number"
+                                        id="tax_registration_number"
+                                        value="{{ old('tax_registration_number', $investor->tax_registration_number) }}"
+                                        placeholder="Enter tax registration number">
+                                    <label for="tax_registration_number">Tax Registration Number</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="business_logo" class="form-label">Upload Business Logo</label>
+                                <div class="file-upload-wrapper">
+                                    <input class="form-control" type="file" id="business_logo" name="business_logo"
+                                        accept=".jpg,.jpeg,.png">
+                                    <label for="business_logo" class="file-upload-label w-100">
+                                        <i class="fas fa-upload me-2"></i>Choose Image file...(jpg,png,jpeg)
+                                    </label>
+                                </div>
+                                <div id="business_logo_preview" class="image-preview-container mt-2">
+                                    @if ($investor->business_logo)
+                                        <img src="{{ Storage::url($investor->business_logo) }}" class="img-thumbnail"
+                                            style="max-width: 150px; max-height: 150px; object-fit: cover; margin: 5px;">
                                     @endif
                                 </div>
+                                <div class="text-danger mt-1 d-none" id="business_logo_error"></div>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="investor_profile" class="form-label">Upload Investor Profile</label>
+                                <div class="file-upload-wrapper">
+                                    <input class="form-control" type="file" id="investor_profile"
+                                        name="investor_profile" accept=".pdf">
+                                    <label for="investor_profile" class="file-upload-label w-100">
+                                        <i class="fas fa-upload me-2"></i>Choose PDF file...(PDF, max 10MB)
+                                    </label>
+                                </div>
+                                <div id="investor_profile_preview" class="pdf-preview-container mt-2">
+                                    @if ($investor->investor_profile)
+                                        <div class="d-flex align-items-center p-2 border rounded mb-2">
+                                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                                            <div>
+                                                <div class="fw-bold">
+                                                    <a href="{{ Storage::url($investor->investor_profile) }}"
+                                                        target="_blank">
+                                                        {{ basename($investor->investor_profile) }}
+                                                    </a>
+                                                </div>
+                                                <small class="text-muted">PDF</small>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="text-danger mt-1 d-none" id="investor_profile_error"></div>
+                                @error('investor_profile')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Investment Companies -->
+                        <div class="row mb-4 company-information"
+                            style="display: {{ old('existing_company', $investor->existing_company ?? '0') == '1' ? 'block' : 'none' }};">
+                            <div class="col-12">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-building me-2"></i>Investment Companies
+                                </h5>
+                            </div>
+                            @foreach ($investor->companies ?? [] as $index => $company)
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="text" class="form-control"
+                                            name="company_name[{{ $index }}]"
+                                            value="{{ old('company_name.' . $index, $company->company_name) }}"
+                                            placeholder="Enter company name">
+                                        <label for="company_name[{{ $index }}]">Company Name</label>
+                                        @error('company_name.' . $index)
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control"
+                                            name="market_capital[{{ $index }}]"
+                                            value="{{ old('market_capital.' . $index, $company->market_capital) }}"
+                                            placeholder="Enter market capital">
+                                        <label for="market_capital[{{ $index }}]">Market Capital <span
+                                                class="funding_currency_label">()</span></label>
+                                        @error('market_capital.' . $index)
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control"
+                                            name="your_stake[{{ $index }}]"
+                                            value="{{ old('your_stake.' . $index, $company->your_stake) }}"
+                                            placeholder="Enter your stake (%)" min="0" max="100"
+                                            step="0.01">
+                                        <label for="your_stake[{{ $index }}]">Your Stake (%)</label>
+                                        @error('your_stake.' . $index)
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating-custom">
+                                        <input type="number" class="form-control"
+                                            name="stake_funding[{{ $index }}]"
+                                            value="{{ old('stake_funding.' . $index, $company->stake_funding) }}"
+                                            placeholder="Enter stake funding">
+                                        <label for="stake_funding[{{ $index }}]."Stake Funding><span
+                                                class="funding_currency_label">funding_currency_label">()</span></label>
+                                        @error('stake_funding.' . $index)
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                @endif
+                            </div>
                     </div>
                     @endforeach
                 </div>
 
                 <!-- Terms and Conditions -->
-                <div class="mb-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="agreed_to_terms" id="agreed_to_terms"
-                            required>
-                        <label class="form-check-label" for="agreed_to_terms" for="agreed_to_terms">
-                            I agree to the <a href="#" class="text-primary">"Terms and Conditions</a>
-                            and
-                            <a href="#" class="text-primary">Privacy Policy</a> *
-                        </label>
+                @if (!$isApproved || $isAdmin)
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="agreed_to_terms" id="agreed_to_terms"
+                                required>
+                            <label class="form-check-label" for="agreed_to_terms">
+                                I agree to the <a href="#" class="text-primary">Terms and Conditions</a> and
+                                <a href="#" class="text-primary">Privacy Policy</a> *
+                            </label>
+                            {{-- @error('agreed_to_terms')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror --}}
+                        </div>
                     </div>
-                </div>
-
-                <!-- Submit Buttons -->
-                <div class="d-flex flex-column flex-sm-row gap-3">
-                    <a href="#" class="btn btn-outline-secondary flex-fill">
-                        <i class="fas fa-arrow-left me-2"></i> Back
-                    </a>
-                    <button type="submit" class="btn btn-primary flex-fill"
-                        style="background-color: #2E50A9B9; color: white;">
-                        <i class="fas fa-check me-2"></i> Update Profile
-                    </button>
-                </div>
-                </form>
-            @else
-                <div class="text-center mt-4">
-                    <p class="text-muted">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Profile is approved and cannot be edited.
-                    </p>
-                </div>
+                    <div class="d-flex flex-column flex-sm-row gap-3">
+                        {{-- <a href="{{ route('choose.role', $user->id) }}" class="btn btn-outline-secondary flex-fill">
+                                <i class="fas fa-arrow-left me-2"></i>Back
+                            </a> --}}
+                        <button type="submit" class="btn btn flex-fill" style="background-color: #2EA9B9; color: white;">
+                            <i class="fas fa-check me-2"></i>Update Profile
+                        </button>
+                        </form>
+                    </div>
+                @else
+                    <div class="text-center mt-4">
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Profile is approved and cannot be edited.
+                        </p>
+                    </div>
                 @endif
             </div>
         </div>
