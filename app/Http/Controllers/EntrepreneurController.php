@@ -702,13 +702,15 @@ class EntrepreneurController extends Controller
             $query = Entrepreneur::whereRaw('0 = 1'); // No data for other roles
         }
 
-        // Apply filter from tab
+        // Apply filter from dropdown
         $filter = $request->get('filter');
 
         if ($filter === 'alreadyfunded') {
             $query->where('interested', 1);
         } elseif ($filter === 'approved') {
             $query->where('approved', 1);
+        } elseif ($filter === 'unapproved') {
+            $query->where('approved', 0);
         } elseif ($filter === 'latest' || !$filter) {
             $query->orderByDesc('created_at'); // latest default
         } elseif ($filter === 'trending') {
@@ -716,14 +718,19 @@ class EntrepreneurController extends Controller
             $query->orderByDesc('views'); // example, assuming 'views' field
         }
 
-        // Apply search query on full_name, country, or market_capital
-        if ($request->filled('query')) {
-            $searchTerm = $request->input('query');
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('business_name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('country', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('market_capital', 'like', '%' . $searchTerm . '%');
+        // Apply search query on full_name, business_name for name_query
+        if ($request->filled('name_query')) {
+            $nameSearchTerm = $request->input('name_query');
+            $query->where(function ($q) use ($nameSearchTerm) {
+                $q->where('full_name', 'like', '%' . $nameSearchTerm . '%')
+                    ->orWhere('business_name', 'like', '%' . $nameSearchTerm . '%');
             });
+        }
+
+        // Apply search query on email for email_query
+        if ($request->filled('email_query')) {
+            $emailSearchTerm = $request->input('email_query');
+            $query->where('email', 'like', '%' . $emailSearchTerm . '%');
         }
 
         $entrepreneur = $query->paginate(100)->appends($request->all());

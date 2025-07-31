@@ -913,12 +913,34 @@ class InvestorController extends Controller
     public function getInvestore(Request $request)
     {
         $investores = Investor::all();
-        $investore = Investor::query()
-            ->paginate(100)
-            ->appends($request->except('page')); // Preserve query parameters except 'page'
+        $query = Investor::query();
+
+        // Apply filter from dropdown
+        $filter = $request->get('filter');
+        if ($filter === 'approved') {
+            $query->where('approved', 1);
+        } elseif ($filter === 'unapproved') {
+            $query->where('approved', 0);
+        } elseif ($filter === 'latest' || !$filter) {
+            $query->orderByDesc('created_at'); // latest default
+        }
+
+        // Apply search query on full_name
+        if ($request->filled('name_query')) {
+            $nameSearchTerm = $request->input('name_query');
+            $query->where('full_name', 'like', '%' . $nameSearchTerm . '%');
+        }
+
+        // Apply search query on email
+        if ($request->filled('email_query')) {
+            $emailSearchTerm = $request->input('email_query');
+            $query->where('email', 'like', '%' . $emailSearchTerm . '%');
+        }
+
+        $investore = $query->paginate(100)->appends($request->except('page')); // Preserve query parameters except 'page'
 
         if ($investore->currentPage() > $investore->lastPage()) {
-            return redirect()->route('admin.entrepreneurs', array_merge($request->except('page'), ['page' => 1]));
+            return redirect()->route('admin.investors', array_merge($request->except('page'), ['page' => 1]));
         }
 
         return view('investor', compact('investore', 'investores'));

@@ -557,46 +557,116 @@
                 </div>
             </div> --}}
 
-            <div class="bg-light d-flex justify-content-center align-items-center flex-wrap text-white py-4">
-                <div class="d-flex" style="height: 45px;">
-                    <!-- Filter Tabs -->
-                    <div class="btn-group" role="group">
-                        <a href="{{ route('admin.entrepreneurs', ['filter' => 'latest']) }}"
-                            class="btn btn-light {{ request('filter') == 'latest' || !request('filter') ? 'active' : '' }}">
-                            Latest
-                        </a>
-                        {{-- <a href="{{ route('admin.entrepreneurs', ['filter' => 'trending']) }}"
-                            class="btn btn-light {{ request('filter') == 'trending' ? 'active' : '' }}">
-                            Trending
-                        </a>
-                        <a href="{{ route('admin.entrepreneurs', ['filter' => 'alreadyfunded']) }}"
-                            class="btn btn-light {{ request('filter') == 'alreadyfunded' ? 'active' : '' }}">
-                            Already Funded
-                        </a> --}}
-                        <a href="{{ route('admin.entrepreneurs', ['filter' => 'approved']) }}"
-                            class="btn btn-light {{ request('filter') == 'approved' ? 'active' : '' }}">
-                            Approved
-                        </a>
-                    </div>
+            {{-- <div class="bg-light py-4">
+                <div class="container">
+                    <div class="d-flex flex-column flex-md-row justify-content-center gap-2">
+                        <!-- Filter Dropdown -->
+                        <div class="w-20 w-md-auto">
+                            <form action="{{ route('admin.entrepreneurs') }}" method="GET"
+                                class="d-flex align-items-center">
+                                <select name="filter" class="form-select" style="height: 45px; border-radius: 2px;"
+                                    onchange="this.form.submit()">
+                                    <option value="latest"
+                                        {{ request('filter') == 'latest' || !request('filter') ? 'selected' : '' }}>Latest
+                                    </option>
+                                    <option value="approved" {{ request('filter') == 'approved' ? 'selected' : '' }}>
+                                        Approved</option>
+                                    <option value="unapproved" {{ request('filter') == 'unapproved' ? 'selected' : '' }}>
+                                        Unapproved</option>
+                                </select>
+                            </form>
+                        </div>
 
-                    <!-- Search Form -->
-                    <div style="padding-left: 5px;">
-                        <form action="{{ route('admin.entrepreneurs') }}" method="GET" class="d-flex">
+                        <!-- Search Form -->
+                        <div class="w-100 w-md-auto">
+                            <form action="{{ route('admin.entrepreneurs') }}" method="GET"
+                                class="d-flex flex-column flex-md-row align-items-center gap-2">
+                                <input type="hidden" name="filter" value="{{ request('filter') }}">
+                                <input type="text" name="name_query" class="form-control border-start-0"
+                                    placeholder="Search by full name..." value="{{ request('name_query') }}"
+                                    style="height: 45px; border-radius: 2px;">
+                                @if (session('selected_role') === 'admin')
+                                    <input type="text" name="email_query" class="form-control border-start-0"
+                                        placeholder="Search by email..." value="{{ request('email_query') }}"
+                                        style="height: 45px; border-radius: 2px;">
+                                @endif
+                                <div class="d-flex flex-column flex-md-row gap-2">
+                                    <button type="submit" class="btn btn-primary" style="height: 45px;">
+                                        Filter
+                                    </button>
+                                    <a href="{{ route('admin.entrepreneurs') }}" class="btn btn-secondary"
+                                        style="height: 45px;">
+                                        Reset
+                                    </a>
+                                    @if (session('selected_role') === 'admin')
+                                        <a href="{{ route('admin.download', request()->all()) }}" class="btn btn-primary"
+                                            style="height: 45px;">
+                                            Download
+                                        </a>
+                                    @endif
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div> --}}
+
+
+            <div class="bg-light py-4 position-relative">
+                <div class="container">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-2">
+                        <!-- Filter Dropdown -->
+                        <div class="w-100 w-md-auto">
+                            <form action="{{ route('admin.entrepreneurs') }}" method="GET"
+                                class="d-flex align-items-center">
+                                <select name="filter" class="form-select" style="height: 45px; border-radius: 2px;"
+                                    onchange="this.form.submit()">
+                                    <option value="latest"
+                                        {{ request('filter') == 'latest' || !request('filter') ? 'selected' : '' }}>Latest
+                                    </option>
+                                    <option value="approved" {{ request('filter') == 'approved' ? 'selected' : '' }}>
+                                        Approved</option>
+                                    <option value="unapproved" {{ request('filter') == 'unapproved' ? 'selected' : '' }}>
+                                        Unapproved</option>
+                                </select>
+                            </form>
+                        </div>
+
+                        <!-- Search Form -->
+                        <form action="{{ route('admin.entrepreneurs') }}" method="GET"
+                            class="d-flex flex-column flex-md-row align-items-center gap-2 w-100 w-md-auto">
                             <input type="hidden" name="filter" value="{{ request('filter') }}">
-                            <input type="text" name="query" class="form-control border-start-0"
-                                placeholder="Search by business name, country, or capital..." value="{{ request('query') }}"
-                                style="height: 45px; border-radius: 2;">
+                            <input type="text" name="name_query" class="form-control border-start-0"
+                                placeholder="Search by full name..." value="{{ request('name_query') }}"
+                                style="height: 45px; border-radius: 2px;">
+                            @if (session('selected_role') === 'admin')
+                                <input type="text" name="email_query" class="form-control border-start-0"
+                                    placeholder="Search by email..." value="{{ request('email_query') }}"
+                                    style="height: 45px; border-radius: 2px;">
+                            @endif
+                            <div class="d-flex flex-row gap-2">
+                                <button type="submit" class="btn btn-primary" style="height: 45px;">
+                                    Filter
+                                </button>
+                                <a href="{{ route('admin.entrepreneurs') }}" class="btn btn-secondary"
+                                    style="height: 45px;">
+                                    Reset
+                                </a>
+                            </div>
                         </form>
                     </div>
-                    @if (session('selected_role') === 'admin')
-                        <div class="ml-3" style="padding-left: 20px;">
-                            <a href="{{ route('admin.download', request()->all()) }}" class="btn btn-lg btn-primary">
-                                Download
-                            </a>
-                        </div>
-                    @endif
                 </div>
+
+                @if (session('selected_role') === 'admin')
+                    <div class="download-button-fixed" style="position: fixed; top: 10px; right: 20px; z-index: 1000;">
+                        <a href="{{ route('admin.download', request()->all()) }}" class="btn btn-primary"
+                            style="height: 45px;">
+                            Download
+                        </a>
+                    </div>
+                @endif
             </div>
+
 
             <div class="table-container">
                 <div class="table-responsive">
@@ -607,10 +677,8 @@
                                 <th scope="col" style="min-width: 150px;">Full Name</th>
                                 @unless (session('selected_role') === 'investor')
                                     <th scope="col" style="min-width: 200px;">Email</th>
-                                    <th scope="col" style="min-width: 130px;">Phone</th>
                                 @endunless
-                                <th scope="col" style="min-width: 100px;">Country</th>
-                                <th scope="col" style="min-width: 100px;">Business Name</th>
+
                                 {{-- <th scope="col" style="min-width: 80px;">Funding Requirement</th> --}}
                                 @unless (session('selected_role') === 'investor')
                                     <th scope="col" style="min-width: 80px;">Video Link</th>
@@ -630,7 +698,10 @@
                                     <th scope="col" style="min-width: 80px;">Reminder</th>
                                     <th scope="col" style="min-width: 80px;">Approved</th>
                                 @endif
-                                <th scope="col" style="min-width: 100px;">Action</th>
+                                <th scope="col" style="min-width: 100px;">View Detail</th>
+                                @if (session('selected_role') === 'admin')
+                                    <th scope="col" style="min-width: 100px;">Delete</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -646,27 +717,7 @@
                                                 {{ $entrepreneurs->email }}
                                             </a>
                                         </td>
-                                        <td>
-                                            <a href="tel:{{ $entrepreneurs->phone_number }}" class="text-decoration-none">
-                                                {{ $entrepreneurs->phone_number }}
-                                            </a>
-                                        </td>
                                     @endunless
-                                    <td>
-                                        <span class="badge bg-secondary badge-custom">
-                                            {{ $entrepreneurs->country }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span>
-                                            @if ($entrepreneurs->register_business == 1)
-                                                {{ $entrepreneurs->y_business_name }}
-                                            @else
-                                                {{ $entrepreneurs->business_name }}
-                                            @endif
-                                        </span>
-                                    </td>
-
                                     {{-- <td>                                                                                                                                                                                                                                                                                                   </td> --}}
                                     @unless (session('selected_role') === 'investor')
                                         <td>
@@ -740,7 +791,8 @@
                                                 class="btn btn-sm btn-primary">Edit</a>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-primary mail-send" data-id="{{ $entrepreneurs->id }}"
+                                            <button class="btn btn-sm btn-primary mail-send"
+                                                data-id="{{ $entrepreneurs->id }}"
                                                 data-name="{{ $entrepreneurs->full_name }}"
                                                 data-email="{{ $entrepreneurs->email }}">
                                                 Reminder
@@ -899,6 +951,9 @@
             data-stake_funding="{{ $entrepreneurs->y_stake_funding }}" @endif>
                                             View Details
                                         </button>
+                                    </td>
+
+                                    <td>
                                         @unless (session('selected_role') === 'investor')
                                             <button class="btn btn-sm btn-danger delete-btn"
                                                 data-id="{{ $entrepreneurs->id }}">

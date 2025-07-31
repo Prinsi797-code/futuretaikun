@@ -73,7 +73,7 @@
         }
 
         /* Responsive design for smaller screens */
-        @media (max-width: 768px) {
+        @media (max-width: 1530px) {
             .sidebar {
                 z-index: 1030;
                 transform: translateX(-100%);
@@ -93,7 +93,7 @@
             }
         }
 
-        @media (min-width: 769px) {
+        @media (min-width: 1530px) {
             .mobile-menu-btn {
                 display: none;
             }
@@ -664,7 +664,7 @@
             const sidebar = document.getElementById('sidebar');
             const mobileBtn = document.querySelector('.mobile-menu-btn');
 
-            if (window.innerWidth <= 768 &&
+            if (window.innerWidth <= 1530 &&
                 !sidebar.contains(event.target) &&
                 !mobileBtn.contains(event.target)) {
                 sidebar.classList.remove('show');
