@@ -81,7 +81,8 @@ class AuthController extends Controller
             });
         }
 
-        $query->orderBy('created_at', 'desc');
+        // $query->orderBy('created_at', 'desc');
+        $query->orderByRaw('COALESCE(rank, 999) asc');
 
         $approvedEntrepreneurs = $query->take(4)->get();
 
