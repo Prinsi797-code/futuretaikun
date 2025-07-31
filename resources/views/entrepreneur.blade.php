@@ -100,8 +100,8 @@
     }
 
     .resume-section {
-        margin-bottom: 35px;
-        padding: 25px;
+        margin-bottom: 10px;
+        padding: 15px;
         background: #ffffff;
         border-radius: 15px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
@@ -158,7 +158,7 @@
 
     .info-item {
         background: #f8f9ff;
-        padding: 20px;
+        /* padding: 20px; */
         border-radius: 12px;
         border: 1px solid #e8ecf4;
         transition: all 0.3s ease;
