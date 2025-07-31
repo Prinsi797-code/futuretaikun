@@ -1,5 +1,8 @@
 @extends('layouts.admin')
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- Other head content -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 
 @section('title', 'Entrepreneurs Directory')
 <style>
@@ -715,11 +718,12 @@
                                 @endif
                                 @if (session('selected_role') === 'admin')
                                     <th scope="col" style="min-width: 80px;">Reject</th>
+                                    <th scope="col" style="min-width: 80px;">Reminder</th>
                                     <th scope="col" style="min-width: 80px;">Youtube Link</th>
                                     <th scope="col" style="min-width: 80px;">Edit Image</th>
                                     <th scope="col" style="min-width: 80px;">Edit Profile</th>
-                                    <th scope="col" style="min-width: 80px;">Reminder</th>
                                     <th scope="col" style="min-width: 80px;">Approved</th>
+                                    <th scope="col" style="min-width: 80px;">Card Range</th>
                                 @endif
                                 <th scope="col" style="min-width: 100px;">View Detail</th>
                                 @if (session('selected_role') === 'admin')
@@ -792,35 +796,46 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-primary video-btn" data-id="{{ $entrepreneurs->id }}"
-                                                data-video="{{ $entrepreneurs->pitch_video }}" data-bs-toggle="modal"
-                                                data-bs-target="#videoModal">
-                                                Youtube Link
+                                            <button class="btn btn-sm btn-primary mail-send" data-id="{{ $entrepreneurs->id }}"
+                                                data-name="{{ $entrepreneurs->full_name }}"
+                                                data-email="{{ $entrepreneurs->email }}">
+                                                Reminder
                                             </button>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-primary" data-id="{{ $entrepreneurs->id }}"
+                                            <a href="#" class="text-danger video-btn d-flex justify-content-center"
+                                                style="text-decoration: none;" data-id="{{ $entrepreneurs->id }}"
+                                                data-video="{{ $entrepreneurs->pitch_video }}" data-bs-toggle="modal"
+                                                data-bs-target="#videoModal">
+                                                <i class="bi bi-youtube" style="font-size: 20px;"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-pencil-square text-primary d-flex justify-content-center"
+                                                style="cursor: pointer; font-size: 20px;" data-id="{{ $entrepreneurs->id }}"
                                                 data-business-logo="{{ $entrepreneurs->business_logo_admin }}"
                                                 data-y-business-logo="{{ $entrepreneurs->y_business_logo_admin }}"
                                                 data-product-photos="{{ $entrepreneurs->product_photos_admin }}"
                                                 data-y-product-photos="{{ $entrepreneurs->y_product_photos_admin }}"
                                                 data-register-business="{{ $entrepreneurs->register_business }}"
-                                                data-bs-toggle="modal" data-bs-target="#productLogo">
-                                                Products/Logo
-                                            </button>
+                                                data-bs-toggle="modal" data-bs-target="#productLogo"
+                                                title="Edit Products/Logo"></i>
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.entrepreneur.edit', $entrepreneurs->id) }}"
-                                                class="btn btn-sm btn-primary">Edit</a>
+                                                class="text-primary d-flex justify-content-center"
+                                                style="text-decoration: none;">
+                                                <i class="bi bi-pencil" style="font-size: 20px;"></i>
+                                            </a>
                                         </td>
-                                        <td>
+                                        {{-- <td>
                                             <button class="btn btn-sm btn-primary mail-send"
                                                 data-id="{{ $entrepreneurs->id }}"
                                                 data-name="{{ $entrepreneurs->full_name }}"
                                                 data-email="{{ $entrepreneurs->email }}">
                                                 Reminder
                                             </button>
-                                        </td>
+                                        </td> --}}
                                     @endunless
                                     @if (session('selected_role') === 'investor')
                                         {{-- @if (Auth::user()->role === 'investor') --}}
@@ -888,16 +903,6 @@
                                             </button>
                                         </td>
                                     @endif
-
-                                    {{-- @unless (Auth::user()->role === 'investor')
-                                    <td>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input custom-switch-scale toggle-approval"
-                                                type="checkbox" role="switch" data-id="{{ $entrepreneurs->id }}"
-                                                {{ $entrepreneurs->approved ? 'checked' : '' }}>
-                                        </div>
-                                    </td>
-                                @endunless --}}
                                     @unless (session('selected_role') === 'investor')
                                         <td>
                                             <div class="form-check form-switch">
@@ -906,18 +911,35 @@
                                                     {{ $entrepreneurs->approved ? 'checked' : '' }}>
                                             </div>
                                         </td>
+                                        <td>
+                                            <select class="form-select rank-dropdown" data-id="{{ $entrepreneurs->id }}">
+                                                @php
+                                                    $approvedCount = \App\Models\Entrepreneur::where(
+                                                        'approved',
+                                                        1,
+                                                    )->count();
+                                                    $currentRank = $entrepreneurs->rank ?? 0;
+                                                @endphp
+                                                @for ($i = 0; $i <= $approvedCount; $i++)
+                                                    <option value="{{ $i }}"
+                                                        {{ $currentRank == $i ? 'selected' : '' }}>{{ $i }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </td>
                                     @endunless
                                     <td>
-                                        <button class="btn btn-sm btn-primary view-details-btn"
+                                        <i class="bi bi-eye text-primary view-details-btn d-flex justify-content-center"
+                                            style="cursor: pointer; font-size: 20px;" title="View Details"
                                             data-id="{{ $entrepreneurs->id }}"
                                             data-name="{{ $entrepreneurs->full_name }}"
                                             @unless (session('selected_role') === 'investor')
-            data-email="{{ $entrepreneurs->email }}"
-            data-countrycode="{{ $entrepreneurs->country_code }}"
-            data-phone="{{ $entrepreneurs->phone_number }}"
-            data-website="{{ $entrepreneurs->website_links }}"
-            data-address="{{ $entrepreneurs->current_address }}"
-        @endunless
+           data-email="{{ $entrepreneurs->email }}"
+           data-countrycode="{{ $entrepreneurs->country_code }}"
+           data-phone="{{ $entrepreneurs->phone_number }}"
+           data-website="{{ $entrepreneurs->website_links }}"
+           data-address="{{ $entrepreneurs->current_address }}"
+       @endunless
                                             data-qualification="{{ $entrepreneurs->qualification }}"
                                             data-country="{{ $entrepreneurs->country }}"
                                             data-age="{{ $entrepreneurs->age }}" data-dob="{{ $entrepreneurs->dob }}"
@@ -927,61 +949,59 @@
                                             data-industry="{{ $entrepreneurs->industry }}"
                                             data-registerbusiness="{{ $entrepreneurs->register_business }}"
                                             @if ($entrepreneurs->register_business == 0) data-businessname="{{ $entrepreneurs->business_name }}"
-            data-brandname="{{ $entrepreneurs->brand_name }}"
-            data-businesscountry="{{ $entrepreneurs->business_country }}"
-            data-businessstate="{{ $entrepreneurs->business_state }}"
-            data-businesscity="{{ $entrepreneurs->business_city }}"
-            data-describe="{{ $entrepreneurs->business_describe }}"
-            data-businessaddress="{{ $entrepreneurs->business_address }}"
-            data-ownfund="{{ $entrepreneurs->own_fund }}" 
-            data-loan="{{ $entrepreneurs->loan }}"
-            data-amount="{{ $entrepreneurs->invested_amount }}" 
-            data-marketcapital="{{ $entrepreneurs->market_capital }}"
-            data-yourstake="{{ $entrepreneurs->your_stake }}"
-            data-stakefunding="{{ $entrepreneurs->stake_funding }}"
-            data-product_photos="{{ is_array(json_decode($entrepreneurs->product_photos, true)) ? implode(',', json_decode($entrepreneurs->product_photos, true)) : '' }}"
-            data-business_logo="{{ str_replace('business_logos/', '', $entrepreneurs->business_logo) }}"
-            data-pitch_deck="{{ str_replace('pitch_decks/', '', $entrepreneurs->pitch_deck) }}" @endif
+           data-brandname="{{ $entrepreneurs->brand_name }}"
+           data-businesscountry="{{ $entrepreneurs->business_country }}"
+           data-businessstate="{{ $entrepreneurs->business_state }}"
+           data-businesscity="{{ $entrepreneurs->business_city }}"
+           data-describe="{{ $entrepreneurs->business_describe }}"
+           data-businessaddress="{{ $entrepreneurs->business_address }}"
+           data-ownfund="{{ $entrepreneurs->own_fund }}" 
+           data-loan="{{ $entrepreneurs->loan }}"
+           data-amount="{{ $entrepreneurs->invested_amount }}" 
+           data-marketcapital="{{ $entrepreneurs->market_capital }}"
+           data-yourstake="{{ $entrepreneurs->your_stake }}"
+           data-stakefunding="{{ $entrepreneurs->stake_funding }}"
+           data-product_photos="{{ is_array(json_decode($entrepreneurs->product_photos, true)) ? implode(',', json_decode($entrepreneurs->product_photos, true)) : '' }}"
+           data-business_logo="{{ str_replace('business_logos/', '', $entrepreneurs->business_logo) }}"
+           data-pitch_deck="{{ str_replace('pitch_decks/', '', $entrepreneurs->pitch_deck) }}" @endif
                                             @if ($entrepreneurs->register_business == 1) data-employee_number="{{ $entrepreneurs->employee_number }}"
-            data-founder="{{ $entrepreneurs->founder_number }}"
-            data-y_business_name="{{ $entrepreneurs->y_business_name }}"
-            @unless (session('selected_role') === 'investor')
-                data-businessemail="{{ $entrepreneurs->business_email }}"
-                data-businessmobile="{{ $entrepreneurs->business_mobile }}"
-            @endunless
-            data-taxregistrationnumber="{{ $entrepreneurs->tax_registration_number }}"
-            data-y_brand_name="{{ $entrepreneurs->y_brand_name }}"
-            data-businessyear="{{ $entrepreneurs->business_year }}"
-            data-yearcount="{{ $entrepreneurs->business_year_count }}"
-            data-y_describe_business="{{ $entrepreneurs->y_describe_business }}"
-            data-y_business_address="{{ $entrepreneurs->y_business_address }}"
-            data-y_business_country="{{ $entrepreneurs->y_business_country }}"
-            data-y_business_state="{{ $entrepreneurs->y_business_state }}"
-            data-y_business_city="{{ $entrepreneurs->y_business_city }}"
-            data-y_zipcode="{{ $entrepreneurs->y_zipcode }}"
-            data-y_type_industries="{{ $entrepreneurs->y_type_industries }}"
-            data-y_own_fund="{{ $entrepreneurs->y_own_fund }}"
-            data-y_loan="{{ $entrepreneurs->y_loan }}"
-            data-y_invested_amount="{{ $entrepreneurs->y_invested_amount }}"
-            data-revenue1="{{ $entrepreneurs->business_revenue1 }}"
-            data-revenue2="{{ $entrepreneurs->business_revenue2 }}"
-            data-revenue3="{{ $entrepreneurs->business_revenue3 }}"
-            data-y_product_photos="{{ implode(',', json_decode($entrepreneurs->y_product_photos, true)) }}"
-            data-y_business_logo="{{ str_replace('y_business_logos/', '', $entrepreneurs->y_business_logo) }}"
-            data-y_pitch_deck="{{ str_replace('y_pitch_decks/', '', $entrepreneurs->y_pitch_deck) }}"
-            data-market_capital="{{ $entrepreneurs->y_market_capital }}"
-            data-your_stake="{{ $entrepreneurs->y_your_stake }}"
-            data-stake_funding="{{ $entrepreneurs->y_stake_funding }}" @endif>
-                                            View Details
-                                        </button>
+           data-founder="{{ $entrepreneurs->founder_number }}"
+           data-y_business_name="{{ $entrepreneurs->y_business_name }}"
+           @unless (session('selected_role') === 'investor')
+               data-businessemail="{{ $entrepreneurs->business_email }}"
+               data-businessmobile="{{ $entrepreneurs->business_mobile }}"
+           @endunless
+           data-taxregistrationnumber="{{ $entrepreneurs->tax_registration_number }}"
+           data-y_brand_name="{{ $entrepreneurs->y_brand_name }}"
+           data-businessyear="{{ $entrepreneurs->business_year }}"
+           data-yearcount="{{ $entrepreneurs->business_year_count }}"
+           data-y_describe_business="{{ $entrepreneurs->y_describe_business }}"
+           data-y_business_address="{{ $entrepreneurs->y_business_address }}"
+           data-y_business_country="{{ $entrepreneurs->y_business_country }}"
+           data-y_business_state="{{ $entrepreneurs->y_business_state }}"
+           data-y_business_city="{{ $entrepreneurs->y_business_city }}"
+           data-y_zipcode="{{ $entrepreneurs->y_zipcode }}"
+           data-y_type_industries="{{ $entrepreneurs->y_type_industries }}"
+           data-y_own_fund="{{ $entrepreneurs->y_own_fund }}"
+           data-y_loan="{{ $entrepreneurs->y_loan }}"
+           data-y_invested_amount="{{ $entrepreneurs->y_invested_amount }}"
+           data-revenue1="{{ $entrepreneurs->business_revenue1 }}"
+           data-revenue2="{{ $entrepreneurs->business_revenue2 }}"
+           data-revenue3="{{ $entrepreneurs->business_revenue3 }}"
+           data-y_product_photos="{{ implode(',', json_decode($entrepreneurs->y_product_photos, true)) }}"
+           data-y_business_logo="{{ str_replace('y_business_logos/', '', $entrepreneurs->y_business_logo) }}"
+           data-y_pitch_deck="{{ str_replace('y_pitch_decks/', '', $entrepreneurs->y_pitch_deck) }}"
+           data-market_capital="{{ $entrepreneurs->y_market_capital }}"
+           data-your_stake="{{ $entrepreneurs->y_your_stake }}"
+           data-stake_funding="{{ $entrepreneurs->y_stake_funding }}" @endif>
                                     </td>
 
                                     <td>
                                         @unless (session('selected_role') === 'investor')
-                                            <button class="btn btn-sm btn-danger delete-btn"
+                                            <i class="bi bi-trash text-danger delete-btn d-flex justify-content-center"
+                                                style="cursor: pointer; font-size: 20px;" title="Delete"
                                                 data-id="{{ $entrepreneurs->id }}">
-                                                Delete
-                                            </button>
+                                            </i>
                                         @endunless
                                     </td>
                                 </tr>
@@ -2745,5 +2765,62 @@
                 }
             });
         }
+    </script>
+    <script>
+        document.querySelectorAll('.rank-dropdown').forEach(select => {
+            select.addEventListener('change', function() {
+                const id = this.getAttribute('data-id');
+                const rank = this.value;
+                const previousRank = this.querySelector('option:checked')?.previousElementSibling?.value ||
+                    this.value;
+
+                fetch('{{ route('admin.update.rank') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            id: id,
+                            rank: rank,
+                            previousRank: previousRank
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            if (response.status === 409) {
+                                return response.json().then(data => Promise.reject(data));
+                            }
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Rank updated successfully!'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message || 'Error updating rank'
+                            });
+                            this.value = data.previousRank || previousRank; // Revert on failure
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'An error occurred while updating the rank'
+                        });
+                        this.value = previousRank; // Revert on network error
+                    });
+            });
+        });
     </script>
 @endsection

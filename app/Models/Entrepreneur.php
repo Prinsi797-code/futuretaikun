@@ -94,6 +94,7 @@ class Entrepreneur extends Model
         'y_business_logo_admin',
         'product_photos_admin',
         'y_product_photos_admin',
+        'rank'
     ];
 
     protected $casts = [

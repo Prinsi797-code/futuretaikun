@@ -775,13 +775,13 @@ class EntrepreneurController extends Controller
             });
         }
 
-        $query->orderBy('created_at', 'desc');
+        // Order by rank ascending, with NULL ranks set to a high value (e.g., 999) to appear last
+        $query->orderByRaw('COALESCE(rank, 999) asc');
 
         $approvedEntrepreneurs = $query->paginate(100)->appends($request->all());
 
         return view('entrepreneur.approved', compact('approvedEntrepreneurs'));
     }
-
 
     public function toggleApproval(Request $request)
     {
@@ -2868,5 +2868,52 @@ class EntrepreneurController extends Controller
         }
 
         return false;
+    }
+    public function updateRank(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            $rank = $request->input('rank');
+            $previousRank = $request->input('previousRank');
+
+            // Validate inputs
+            if (!$id || !is_numeric($rank) || $rank < 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid ID or rank. Rank must be a non-negative number.',
+                    'previousRank' => $previousRank
+                ], 400);
+            }
+
+            $entrepreneur = Entrepreneur::find($id);
+            if (!$entrepreneur) {
+                return response()->json(['success' => false, 'message' => 'Entrepreneur not found'], 404);
+            }
+
+            // Check if the new rank is already taken by another entrepreneur
+            $existingEntrepreneurWithRank = Entrepreneur::where('rank', $rank)
+                ->where('id', '!=', $id)
+                ->first();
+            if ($existingEntrepreneurWithRank) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Rank ' . $rank . ' is already assigned to another entrepreneur',
+                    'previousRank' => $entrepreneur->rank
+                ], 409);
+            }
+
+            $previousRankValue = $entrepreneur->rank;
+            $entrepreneur->rank = $rank;
+            $success = $entrepreneur->save();
+
+            return response()->json([
+                'success' => $success,
+                'previousRank' => $success ? null : $previousRankValue,
+                'message' => $success ? 'Rank updated successfully' : 'Failed to update rank'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating rank: ' . $e->getMessage() . ' | Request: ' . json_encode($request->all()));
+            return response()->json(['success' => false, 'message' => 'Internal server error'], 500);
+        }
     }
 }

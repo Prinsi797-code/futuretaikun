@@ -53,6 +53,7 @@ Route::post('/investor/store', [InvestorController::class, 'store'])->name('inve
 
 //serach route
 Route::get('/search', [EntrepreneurController::class, 'approvedEntrepreneurs'])->name('search');
+Route::post('/entrepreneurs/update-rank', [EntrepreneurController::class, 'updateRank'])->name('admin.update.rank');
 Route::post('/entrepreneur/toggle-approval', [EntrepreneurController::class, 'toggleApproval'])->name('entrepreneur.toggleApproval');
 
 Route::post('/investor/toggle-approval', [InvestorController::class, 'toggleApproval'])->name('investor.toggleApproval');
