@@ -40,7 +40,7 @@
     }
 
     .info-item {
-        display: flex;
+        /* display: flex; */
         flex-direction: column;
         padding: 0.5rem;
         background-color: #f9f9f9;
@@ -86,9 +86,6 @@
         background-color: #f8f9fa;
         border-bottom: #3498db;
     }
-
-
-
 
 
     .resume-container {
@@ -194,7 +191,7 @@
         color: #2c3e50;
         display: block;
         margin-bottom: 8px;
-        font-size: 0.9rem;
+        font-size: 12px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
@@ -208,8 +205,8 @@
 
     /* Product Images Styling */
     .product-image {
-        max-width: 80px;
-        max-height: 80px;
+        max-width: 50px;
+        max-height: 50px;
         border-radius: 8px;
         margin: 5px;
         transition: all 0.3s ease;
@@ -452,9 +449,9 @@
 
     /* Better text contrast */
     .info-label {
-        background: rgba(52, 152, 219, 0.1);
+        /* background: rgba(52, 152, 219, 0.1);
         padding: 4px 8px;
-        border-radius: 4px;
+        border-radius: 4px; */
         display: inline-block;
     }
 
@@ -520,6 +517,33 @@
             border: 1px solid #ddd;
             background: white !important;
         }
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .full-image {
+        max-width: 90%;
+        max-height: 90%;
+    }
+
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        color: white;
+        font-size: 30px;
+        cursor: pointer;
     }
 </style>
 @section('content')
@@ -667,11 +691,10 @@
                 @endif
             </div>
 
-
             <div class="table-container">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
-                        <thead class="table-light sticky-top">
+                        <thead class="table-light sticky-top" style="z-index: 1;">
                             <tr>
                                 <th scope="col" style="min-width: 50px;">#</th>
                                 <th scope="col" style="min-width: 150px;">Full Name</th>
@@ -2569,12 +2592,14 @@
         <div class="info-item"><span class="info-label">Fund Asked:</span> ${button.dataset.marketcapital || 'N/A'}</div>
         <div class="info-item"><span class="info-label">Equity Offered:</span> ${button.dataset.yourstake || 'N/A'}</div>
         <div class="info-item"><span class="info-label">Company Valuation:</span> ${button.dataset.stakefunding || 'N/A'}</div>
-        <div class="info-item"><span class="info-label">Product Photos:</span>
-            ${button.dataset.product_photos ? 
-                button.dataset.product_photos.replace(/[\[\]']/g, '').split(',').map(photo => 
-                    `<img src="/storage/${photo.trim()}" alt="Product Photo" class="product-image">`
-                ).join('') : 'N/A'}
-        </div>
+        <div class="info-item">
+    <span class="info-label">Product Photos:</span>
+    ${button.dataset.product_photos ? 
+        button.dataset.product_photos.replace(/[\[\]']/g, '').split(',').map(photo => 
+            `<img src="/storage/${photo.trim()}" alt="Product Photo" class="product-image w-10 h-10" onclick="showImagePopup('/storage/${photo.trim()}')">`
+        ).join('') : 'N/A'}
+</div>
+
         <div class="info-item"><span class="info-label">Business Logo:</span>
             ${button.dataset.business_logo ? `<img src="/storage/business_logos/${button.dataset.business_logo.trim()}" alt="Business Logo" class="product-image">` : 'N/A'}
         </div>
@@ -2701,5 +2726,24 @@
                     });
             }
         });
+    </script>
+    <script>
+        function showImagePopup(imageSrc) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+            <img src="${imageSrc}" alt="Full Size Product Photo" class="full-image">
+        `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+
+            // Close modal when clicking outside the image
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.removeChild(modal);
+                }
+            });
+        }
     </script>
 @endsection
