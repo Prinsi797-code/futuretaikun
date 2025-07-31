@@ -2890,15 +2890,25 @@ class EntrepreneurController extends Controller
                 return response()->json(['success' => false, 'message' => 'Entrepreneur not found'], 404);
             }
 
-            // Check if the new rank is already taken by another entrepreneur
+            // Check if entrepreneur is approved
+            if ($entrepreneur->approved != 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot set rank for unapproved entrepreneur',
+                    'previousRank' => $entrepreneur->rank ?? 0
+                ], 403);
+            }
+
+            // Check if the new rank is already taken by another approved entrepreneur
             $existingEntrepreneurWithRank = Entrepreneur::where('rank', $rank)
                 ->where('id', '!=', $id)
+                ->where('approved', 1)
                 ->first();
             if ($existingEntrepreneurWithRank) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Rank ' . $rank . ' is already assigned to another entrepreneur',
-                    'previousRank' => $entrepreneur->rank
+                    'message' => 'Rank ' . $rank . ' is already assigned to another approved entrepreneur',
+                    'previousRank' => $entrepreneur->rank ?? 0
                 ], 409);
             }
 

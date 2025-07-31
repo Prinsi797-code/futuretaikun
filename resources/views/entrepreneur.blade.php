@@ -912,20 +912,25 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select class="form-select rank-dropdown" data-id="{{ $entrepreneurs->id }}">
-                                                @php
-                                                    $approvedCount = \App\Models\Entrepreneur::where(
-                                                        'approved',
-                                                        1,
-                                                    )->count();
-                                                    $currentRank = $entrepreneurs->rank ?? 0;
-                                                @endphp
-                                                @for ($i = 0; $i <= $approvedCount; $i++)
-                                                    <option value="{{ $i }}"
-                                                        {{ $currentRank == $i ? 'selected' : '' }}>{{ $i }}
-                                                    </option>
-                                                @endfor
-                                            </select>
+                                            @php
+                                                $approvedCount = \App\Models\Entrepreneur::where(
+                                                    'approved',
+                                                    1,
+                                                )->count();
+                                                $currentRank = $entrepreneurs->rank ?? 0;
+                                            @endphp
+                                            @if ($entrepreneurs->approved == 1)
+                                                <select class="form-select rank-dropdown" data-id="{{ $entrepreneurs->id }}"
+                                                    data-previous-rank="{{ $currentRank }}">
+                                                    @for ($i = 0; $i <= $approvedCount; $i++)
+                                                        <option value="{{ $i }}"
+                                                            {{ $currentRank == $i ? 'selected' : '' }}>{{ $i }}
+                                                        </option>
+                                                    @endfor
+                                                </select>
+                                            @else
+                                                <span>Unapproved</span>
+                                            @endif
                                         </td>
                                     @endunless
                                     <td>
@@ -2771,8 +2776,7 @@
             select.addEventListener('change', function() {
                 const id = this.getAttribute('data-id');
                 const rank = this.value;
-                const previousRank = this.querySelector('option:checked')?.previousElementSibling?.value ||
-                    this.value;
+                const previousRank = this.getAttribute('data-previous-rank');
 
                 fetch('{{ route('admin.update.rank') }}', {
                         method: 'POST',
@@ -2788,7 +2792,7 @@
                     })
                     .then(response => {
                         if (!response.ok) {
-                            if (response.status === 409) {
+                            if (response.status === 409 || response.status === 403) {
                                 return response.json().then(data => Promise.reject(data));
                             }
                             throw new Error('Network response was not ok');
@@ -2802,6 +2806,8 @@
                                 title: 'Success',
                                 text: 'Rank updated successfully!'
                             });
+                            this.setAttribute('data-previous-rank',
+                            rank); // Update previous rank on success
                         } else {
                             Swal.fire({
                                 icon: 'error',
