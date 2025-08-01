@@ -21,9 +21,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('reminder:send-emails')
-            ->dailyAt('03:00')
-            ->emailOutputOnFailure('admin@yourdomain.com');
+        $schedule->command('reminder:send-emails')->daily();
 
         $schedule->command('reminder:send-incomplete-profile')
             ->dailyAt('08:00');

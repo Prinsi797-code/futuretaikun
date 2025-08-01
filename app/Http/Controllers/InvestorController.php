@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EnterpreneurNotificationMail;
 use App\Mail\InterestedNotification;
 use App\Mail\InvestorApprovedMail;
 use App\Mail\InvestorNewCompanyNotification;
+use App\Mail\InvestorNotificationMail;
 use App\Mail\NewCompanyNotification;
 use App\Mail\SendUserLoginInfoMail;
 use App\Models\DummyInvestor;
@@ -902,11 +904,21 @@ class InvestorController extends Controller
             try {
                 Mail::to($investor->email)->send(new InvestorApprovedMail($investor));
                 Log::info("Profile Verify mail sent successfully to {$investor->email}");
+
+                // Send notification to all investors
+                $enterpreneurs = Entrepreneur::all();
+                foreach ($enterpreneurs as $enterpreneur) {
+                    try {
+                        Mail::to($enterpreneur->email)->send(new EnterpreneurNotificationMail($investor));
+                        Log::info("Enterpreneur notification mail sent successfully to {$enterpreneur->email}");
+                    } catch (\Exception $e) {
+                        Log::error("Failed to send Enterpreneur notification mail to {$enterpreneur->email}. Error: " . $e->getMessage());
+                    }
+                }
             } catch (\Exception $e) {
                 Log::error("Failed to send approval mail to {$investor->email}. Error: " . $e->getMessage());
             }
         }
-
         return response()->json(['success' => true]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Investor;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,15 +13,16 @@ use Illuminate\Queue\SerializesModels;
 class EnterpreneurNotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
+    public $investor;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Investor $investor)
     {
-        //
+        $this->investor = $investor;
     }
 
     /**
@@ -31,7 +33,7 @@ class EnterpreneurNotificationMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Enterpreneur Notification Mail',
+            subject: 'New Investor Approved',
         );
     }
 
@@ -43,7 +45,11 @@ class EnterpreneurNotificationMail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.enterpreneur_notification',
+            with: [
+                'investment_range' => $this->investor->investment_range,
+                'investor_type' => $this->investor->investor_type,
+            ],
         );
     }
 

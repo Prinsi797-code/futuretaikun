@@ -36,40 +36,41 @@ class SendReminderEmails extends Command
     {
         $emailsSent = 0;
         $reminderDays = Setting::where('key', 'reminder_days')->value('value');
-        $reminderDate = now()->subDays($reminderDays)->toDateString();
-
+        $today = now();
         // Fetch entrepreneurs registered on the reminder date
-        $entrepreneurs = Entrepreneur::whereDate('created_at', $reminderDate)->get();
+        $entrepreneurs = Entrepreneur::all();
         foreach ($entrepreneurs as $entrepreneur) {
-            $incompleteFields = $this->getIncompleteFields($entrepreneur);
-            if (!empty($incompleteFields)) {
-                $this->sendReminderEmail($entrepreneur->email, $incompleteFields, 'Entrepreneur');
+            $daysSinceCreation = $today->diffInDays($entrepreneur->created_at);
+            if ($daysSinceCreation >= $reminderDays && $daysSinceCreation % $reminderDays === 0) {
+                $incompleteFields = $this->getIncompleteFields($entrepreneur);
+                if (!empty($incompleteFields)) {
+                    $this->sendReminderEmail($entrepreneur->email, $incompleteFields, 'Entrepreneur');
+                    $emailsSent++;
+                    $this->info("Reminder email sent to: {$entrepreneur->email} (Type: Entrepreneur, Days since creation: {$daysSinceCreation})");
+                }
             }
-            // $ php artisan reminder:send
-            // if (!empty($incompleteFields)) {
-            //     $this->sendReminderEmail($entrepreneur->email, $incompleteFields, 'Entrepreneur');
-            //     $emailsSent++;
-            //     $this->info("Reminder email sent to: {$entrepreneur->email} (Type: Entrepreneur)");
-            // }
         }
 
         // Fetch investors registered on the reminder date
-        $investors = Investor::whereDate('created_at', $reminderDate)->get();
+        $investors = Investor::all();
         foreach ($investors as $investor) {
-            $incompleteFields = $this->getIncompleteFields($investor);
-            if (!empty($incompleteFields)) {
-                $this->sendReminderEmail($investor->email, $incompleteFields, 'Investor');
+            $daysSinceCreation = $today->diffInDays($investor->created_at);
+            if ($daysSinceCreation >= $reminderDays && $daysSinceCreation % $reminderDays === 0) {
+                $incompleteFields = $this->getIncompleteFields($investor);
+                if (!empty($incompleteFields)) {
+                    $this->sendReminderEmail($investor->email, $incompleteFields, 'Investor');
+                    $emailsSent++;
+                    $this->info("Reminder email sent to: {$investor->email} (Type: Investor, Days since creation: {$daysSinceCreation})");
+                }
             }
-            // if (!empty($incompleteFields)) {
-            //     $this->sendReminderEmail($investor->email, $incompleteFields, 'Investor');
-            //     $emailsSent++;
-            //     $this->info("Reminder email sent to: {$investor->email} (Type: Investor)");
-            // }
         }
 
         // $this->info("Total reminder emails sent: {$emailsSent}");
 
+        $this->info("Total reminder emails sent: {$emailsSent}");
+
         $this->info('Reminder emails sent successfully.');
+        return 0;
     }
 
     private function getIncompleteFields($user)

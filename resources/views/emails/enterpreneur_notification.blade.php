@@ -23,7 +23,7 @@
         }
 
         .header {
-            background-color: #1e40af;
+            background-color: #003366;
             color: #ffffff;
             text-align: center;
             padding: 20px;
@@ -76,7 +76,7 @@
 
         .cta a {
             display: inline-block;
-            background-color: #1e40af;
+            background-color: #003366;
             color: #ffffff;
             text-decoration: none;
             font-weight: 600;
@@ -86,7 +86,7 @@
         }
 
         .cta a:hover {
-            background-color: #1e3a8a;
+            background-color: #003366;
         }
 
         .footer {
@@ -98,7 +98,7 @@
         }
 
         .footer a {
-            color: #1e40af;
+            color: #003366;
             text-decoration: none;
         }
 
@@ -131,29 +131,22 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>New Entrepreneur Approved</h1>
+            <h1>New Investor Approved</h1>
         </div>
 
         <!-- Content -->
         <div class="content">
-            <p>A new entrepreneur has been approved. Here are the details:</p>
+            <p>We’re thrilled to announce a new investment opportunity through FutureTaikun.</p>
 
             <div class="details-box">
                 <ul>
-                    <li><span>Business Name:</span> {{ $business_name }}</li>
-                    <li><span>Brand Name:</span> {{ $brand_name }}</li>
-                    <li><span>Fund Asked:</span> {{ $fund_asked }}</li>
-                    <li><span>Equity Offered:</span> {{ $equity_offered }}%</li>
-                    <li><span>Company Valuation:</span> {{ $company_valuation }}</li>
+                    <li><span>Investment Range:</span> {{ $investment_range }}</li>
+                    <li><span>Investor Type:</span> {{ $investor_type }}</li>
                 </ul>
             </div>
 
-            <p>Please review this opportunity in your investor dashboard.</p>
-
-            <!-- CTA Button -->
-            <div class="cta">
-                <a href="{{ route('login') }}">View Dashboard</a>
-            </div>
+            <p>If this investor shows interest in your idea, we will pitch it on your behalf through FutureTaikun. To
+                explore this opportunity. Our team will review and guide you further.</p>
         </div>
 
         <!-- Footer -->
