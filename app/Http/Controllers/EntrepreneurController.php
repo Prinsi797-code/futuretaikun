@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\EntrepreneurRejected;
 use App\Mail\InterestedNotification;
+use App\Mail\InvestorNotificationMail;
 use App\Mail\NewCompanyNotification;
 use App\Mail\RemarkNotification;
 use App\Mail\SendUserLoginInfoMail;
@@ -816,15 +817,27 @@ class EntrepreneurController extends Controller
 
         if ($request->approved) {
             try {
+                // Send approval email to entrepreneur
                 Mail::to($entrepreneur->email)->send(new EntrepreneurApprovedMail($entrepreneur));
                 Log::info("Approval mail sent successfully to {$entrepreneur->email}");
+
+                // Send notification to all investors
+                $investors = Investor::all();
+                foreach ($investors as $investor) {
+                    try {
+                        Mail::to($investor->email)->send(new InvestorNotificationMail($entrepreneur));
+                        Log::info("Investor notification mail sent successfully to {$investor->email}");
+                    } catch (\Exception $e) {
+                        Log::error("Failed to send investor notification mail to {$investor->email}. Error: " . $e->getMessage());
+                    }
+                }
             } catch (\Exception $e) {
                 Log::error("Failed to send approval mail to {$entrepreneur->email}. Error: " . $e->getMessage());
             }
         }
-
         return response()->json(['success' => true]);
     }
+
     public function edit()
     {
         $user = Auth::user();
